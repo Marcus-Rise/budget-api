@@ -86,10 +86,10 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: app
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           builder: ${{ steps.buildx.outputs.name }}
           push: true # Will only build if this is not here
           tags: |
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
             ${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
