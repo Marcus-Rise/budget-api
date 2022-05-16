@@ -39,9 +39,7 @@ jobs:
 
       - name: Test unit
         working-directory: app
-        run: | 
-          yarn test:cov
-          tar -cvf coverage_report.tar coverage/lcov-report
+        run: yarn test:cov
 
       - name: Collect code coverage report
         uses: actions/upload-artifact@v2
