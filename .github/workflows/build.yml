@@ -89,8 +89,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true # Will only build if this is not here
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}-app
-            ${{ env.IMAGE_NAME }}:latest-app
+            ${{ env.IMAGE_NAME }}/app:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}/app:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -101,7 +101,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true # Will only build if this is not here
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}-web
-            ${{ env.IMAGE_NAME }}:latest-web
+            ${{ env.IMAGE_NAME }}/web:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}/web:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

@@ -9,7 +9,7 @@ volumes:
 
 services:
   web:
-    image: ${IMAGE}-web
+    image: ${IMAGE}/web:${VERSION}
     networks:
       - default
     restart: unless-stopped
@@ -25,7 +25,7 @@ services:
       - .env.ci
 
   app:
-    image: ${IMAGE}-app
+    image: ${IMAGE}/app:${VERSION}
     restart: unless-stopped
     networks:
       - default
