@@ -22,7 +22,7 @@ services:
     depends_on:
       - app
     env_file:
-      - .env.ci
+      - .env
 
   app:
     image: ${IMAGE}/app:${VERSION}
@@ -30,4 +30,4 @@ services:
     networks:
       - default
     env_file:
-      - .env.ci
+      - .env
