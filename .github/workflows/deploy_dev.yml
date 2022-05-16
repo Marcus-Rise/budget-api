@@ -1,0 +1,27 @@
+name: Deploy to DEV
+
+on:
+  workflow_run:
+    workflows: [ "Build" ]
+    branches:
+      - master
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: [self-hosted, dev]
+    env:
+      IMAGE: ghcr.io/$(echo ${{ github.repository }} | tr [:upper:] [:lower:])
+      VERSION: ${{ github.sha }}
+      HOST: api-dev.budget.marcus-rise.dev
+    environment:
+      name: Development
+      url: https://${{ env.HOST }}
+    steps:
+      - name: Deploy
+        run: |
+          eval "echo \"$(cat .env.ci)\"" > .env
+          docker-compose pull
+          docker-compose up -d --force-recreate
