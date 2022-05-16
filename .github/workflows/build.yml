@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: code-coverage-report
-          path: app/coverage_report.tar
+          path: app/coverage/lcov-report
 
       - name: Test e2e
         working-directory: app
