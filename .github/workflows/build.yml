@@ -39,7 +39,15 @@ jobs:
 
       - name: Test unit
         working-directory: app
-        run: yarn test:cov
+        run: | 
+          yarn test:cov
+          tar -cvf coverage_report.tar coverage/lcov-report
+
+      - name: Collect code coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage-report
+          path: app/coverage_report.tar
 
       - name: Test e2e
         working-directory: app
@@ -50,9 +58,3 @@ jobs:
         run: | 
           yarn build
           yarn install --prefer-offline --frozen-lockfile --prod
-
-      - name: Collect code coverage report
-        uses: actions/upload-artifact@v2
-        with:
-          name: code-coverage-report
-          path: app/coverage/lcov-report
