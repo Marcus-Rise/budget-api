@@ -20,6 +20,9 @@ jobs:
       name: Development
       url: https://${{ env.HOST }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Deploy
         run: |
           eval "echo \"$(cat .env.ci)\"" > .env
