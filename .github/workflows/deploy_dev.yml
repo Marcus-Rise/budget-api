@@ -24,12 +24,11 @@ jobs:
       - name: Setup env
         run: |
           IMAGE_NAME=$(echo ${{ github.repository }} | tr [:upper:] [:lower:])
-          echo "IMAGE_NAME=ghcr.io/${IMAGE_NAME}" >> $GITHUB_ENV
+          echo "IMAGE=ghcr.io/${IMAGE_NAME}" >> $GITHUB_ENV
           echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
 
       - name: Deploy
         run: |
           eval "echo \"$(cat .env.ci)\"" > .env
-          cat .env
           docker compose pull
           docker compose up -d --force-recreate
