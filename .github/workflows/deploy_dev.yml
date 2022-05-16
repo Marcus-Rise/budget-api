@@ -13,8 +13,6 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: [self-hosted, dev]
     env:
-      IMAGE: ghcr.io/$(echo ${{ github.repository }} | tr [:upper:] [:lower:])
-      VERSION: ${{ github.sha }}
       HOST: api-dev.budget.marcus-rise.dev
     environment:
       name: Development
@@ -22,6 +20,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Setup env
+        run: |
+          IMAGE_NAME=$(echo ${{ github.repository }} | tr [:upper:] [:lower:])
+          echo "IMAGE_NAME=ghcr.io/${IMAGE_NAME}" >> $GITHUB_ENV
+          echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
 
       - name: Deploy
         run: |
