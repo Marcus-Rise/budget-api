@@ -27,7 +27,8 @@
     "@nestjs/platform-express": "^8.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "helmet": "^5.0.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
@@ -50,8 +51,7 @@
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "4.0.0",
-    "typescript": "^4.3.5",
-    "helmet": "^5.0.2"
+    "typescript": "^4.3.5"
   },
   "jest": {
     "moduleFileExtensions": [
