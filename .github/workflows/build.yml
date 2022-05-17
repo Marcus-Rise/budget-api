@@ -96,6 +96,30 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Build and push db docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: docker/postgres
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}/db:${{ env.VERSION }}
+            ${{ env.IMAGE_NAME }}/db:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push adminer docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: docker/adminer
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}/adminer:${{ env.VERSION }}
+            ${{ env.IMAGE_NAME }}/adminer:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: Patch web version info
         run: |
           echo "version: ${{ env.VERSION }}" > docker/caddy/version.txt
@@ -105,7 +129,7 @@ jobs:
         with:
           context: docker/caddy
           builder: ${{ steps.buildx.outputs.name }}
-          push: true # Will only build if this is not here
+          push: true
           tags: |
             ${{ env.IMAGE_NAME }}/web:${{ env.VERSION }}
             ${{ env.IMAGE_NAME }}/web:latest

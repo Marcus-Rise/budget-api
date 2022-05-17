@@ -2,10 +2,12 @@ version: "3.9"
 
 networks:
   default:
+  internal:
 
 volumes:
   caddy_data:
   caddy_config:
+  db_data:
 
 services:
   web:
@@ -27,7 +29,33 @@ services:
   app:
     image: ${IMAGE}/app:${VERSION}
     restart: unless-stopped
+    depends_on:
+      - db
     networks:
       - default
+      - internal
     env_file:
       - .env
+
+  db:
+    image: ${IMAGE}/db:${VERSION}
+    restart: unless-stopped
+    networks:
+      - internal
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+  adminer:
+    image: ${IMAGE}/adminer:${VERSION}
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - default
+      - internal
