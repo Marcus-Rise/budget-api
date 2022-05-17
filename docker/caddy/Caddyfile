@@ -2,4 +2,4 @@
 
 file_server
 reverse_proxy / app:3000
-reverse_proxy /app/* app:3000
+reverse_proxy /api/* app:3000
