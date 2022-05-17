@@ -1,0 +1,61 @@
+version: "3.9"
+
+networks:
+  default:
+  internal:
+
+volumes:
+  caddy_data:
+  caddy_config:
+  db_data:
+
+services:
+  web:
+    build:
+      context: docker/caddy
+    networks:
+      - default
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    env_file:
+      - .env
+
+  app:
+    build:
+      context: app
+    depends_on:
+      - db
+    networks:
+      - default
+      - internal
+    env_file:
+      - .env
+
+  db:
+    build:
+      context: docker/postgres
+    networks:
+      - internal
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+  adminer:
+    build:
+      context: docker/adminer
+    depends_on:
+      - db
+    networks:
+      - default
+      - internal
