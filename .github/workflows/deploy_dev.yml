@@ -27,8 +27,8 @@ jobs:
 
       - name: Setup image name
         run: |
-          IMAGE_NAME=$(echo ${{ github.repository }} | tr [:upper:] [:lower:])
-          echo "IMAGE_NAME=ghcr.io/${IMAGE_NAME}" >> $GITHUB_ENV
+          IMAGE=$(echo ${{ github.repository }} | tr [:upper:] [:lower:])
+          echo "IMAGE=ghcr.io/${IMAGE_NAME}" >> $GITHUB_ENV
 
       - name: Setup version
         if: ${{ github.event_name == 'pull_request' }}
