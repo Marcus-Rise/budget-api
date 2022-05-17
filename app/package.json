@@ -19,7 +19,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm:config:dev": "rimraf ormconfig.json && ts-node -r tsconfig-paths/register --project tsconfig.typeorm.json ./src/typeorm-config-generation.ts",
+    "typeorm:config:prod": "node ./dist/typeorm-config-generation.js"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
