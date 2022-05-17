@@ -23,13 +23,11 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           echo "VERSION=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
-          echo "version: ${{ env.VERSION }}" > docker/caddy/version.txt
 
       - name: Setup version
         if: ${{ github.event_name != 'pull_request' }}
         run: |
           echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
-          echo "version: ${{ env.VERSION }}" > docker/caddy/version.txt
 
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v2
@@ -97,6 +95,10 @@ jobs:
             ${{ env.IMAGE_NAME }}/app:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Patch web version info
+        run: |
+          echo "version: ${{ env.VERSION }}" > docker/caddy/version.txt
 
       - name: Build and push web docker image
         uses: docker/build-push-action@v2
