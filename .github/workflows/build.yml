@@ -14,6 +14,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Setup env
+        run: |
+          IMAGE_NAME=$(echo ${{ github.repository }} | tr [:upper:] [:lower:])
+          echo "IMAGE_NAME=ghcr.io/${IMAGE_NAME}" >> $GITHUB_ENV
+          echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
+          echo "version: ${VERSION}" > docker/caddy/version.txt
+
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v2
         with:
@@ -62,12 +69,6 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Setup env
-        run: |
-          IMAGE_NAME=$(echo ${{ github.repository }} | tr [:upper:] [:lower:])
-          echo "IMAGE_NAME=ghcr.io/${IMAGE_NAME}" >> $GITHUB_ENV
-          echo "version: ${{ github.sha }}" > docker/caddy/version.txt
-
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -82,7 +83,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true # Will only build if this is not here
           tags: |
-            ${{ env.IMAGE_NAME }}/app:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}/app:${{ env.VERSION }}
             ${{ env.IMAGE_NAME }}/app:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -94,7 +95,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true # Will only build if this is not here
           tags: |
-            ${{ env.IMAGE_NAME }}/web:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}/web:${{ env.VERSION }}
             ${{ env.IMAGE_NAME }}/web:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
