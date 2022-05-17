@@ -25,10 +25,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup env
+      - name: Setup image name
         run: |
-          IMAGE_NAME=$(echo ${{ github.repository }} | tr [:upper:] [:lower:])
-          echo "IMAGE=ghcr.io/${IMAGE_NAME}" >> $GITHUB_ENV
+          IMAGE=$(echo ${{ github.repository }} | tr [:upper:] [:lower:])
+          echo "IMAGE=ghcr.io/${IMAGE}" >> $GITHUB_ENV
+
+      - name: Setup version
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "VERSION=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+
+      - name: Setup version
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
           echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
 
       - name: Deploy
