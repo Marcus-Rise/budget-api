@@ -23,6 +23,7 @@ services:
       - caddy_config:/config
     depends_on:
       - app
+      - adminer
     env_file:
       - .env
 
