@@ -41,6 +41,10 @@ jobs:
           echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
 
       - name: Deploy
+        env:
+          DATABASE_USER: ${{ secrets.DATABASE_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
         run: |
           eval "echo \"$(cat .env.ci)\"" > .env
           docker compose pull

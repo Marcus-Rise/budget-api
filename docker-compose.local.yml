@@ -1,0 +1,27 @@
+version: "3.9"
+
+volumes:
+  db_data:
+
+services:
+  db:
+    build:
+      context: docker/postgres
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+  adminer:
+    build:
+      context: docker/adminer
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"

@@ -11,10 +11,10 @@ volumes:
 
 services:
   web:
-    image: ${IMAGE}/web:${VERSION}
+    build:
+      context: docker/caddy
     networks:
       - default
-    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -28,8 +28,8 @@ services:
       - .env
 
   app:
-    image: ${IMAGE}/app:${VERSION}
-    restart: unless-stopped
+    build:
+      context: app
     depends_on:
       - db
     networks:
@@ -39,8 +39,8 @@ services:
       - .env
 
   db:
-    image: ${IMAGE}/db:${VERSION}
-    restart: unless-stopped
+    build:
+      context: docker/postgres
     networks:
       - internal
     environment:
@@ -53,8 +53,8 @@ services:
       - .env
 
   adminer:
-    image: ${IMAGE}/adminer:${VERSION}
-    restart: unless-stopped
+    build:
+      context: docker/adminer
     depends_on:
       - db
     networks:

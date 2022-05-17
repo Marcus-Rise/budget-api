@@ -16,6 +16,7 @@ RUN chown nestjs:nodejs ./
 
 USER nestjs
 
-CMD ["node", "dist/main"]
+CMD yarn typeorm:config:prod \
+    && node dist/main.js
 
 EXPOSE 3000
