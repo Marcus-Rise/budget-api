@@ -1,15 +1,18 @@
 name: Deploy to DEV
 
 on:
-  workflow_run:
-    workflows: [ "Build" ]
+  push:
     branches:
-    types:
-      - completed
+      - 'master'
+  pull_request:
+    branches:
+      - 'master'
 
 jobs:
+  build:
+    uses: ./build.yml
+
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: [self-hosted, dev]
     env:
       HOST: api-dev.budget.marcus-rise.dev
