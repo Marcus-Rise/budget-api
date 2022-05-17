@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup image name
         run: |
@@ -22,8 +20,15 @@ jobs:
           echo "IMAGE_NAME=ghcr.io/${IMAGE_NAME}" >> $GITHUB_ENV
 
       - name: Setup version
+        if: ${{ github.event_name == 'pull_request' }}
         run: |
-          echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
+          echo "VERSION=${{ github.event.pull_request.head.sha }} >> $GITHUB_ENV
+          echo "version: ${VERSION}" > docker/caddy/version.txt
+
+      - name: Setup version
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          echo "VERSION=${{ github.sha }} >> $GITHUB_ENV
           echo "version: ${VERSION}" > docker/caddy/version.txt
 
       - name: Use Node.js ${{ env.NODE_VERSION }}
