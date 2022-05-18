@@ -20,8 +20,17 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm:config:dev": "rimraf ormconfig.json && ts-node -r tsconfig-paths/register --project tsconfig.typeorm.json ./src/typeorm-config-generation.ts",
-    "typeorm:config:prod": "node ./dist/typeorm-config-generation.js"
+    "typeorm:config:dev": "rimraf ormconfig.json && dotenv cross-env ts-node -r tsconfig-paths/register --project tsconfig.typeorm.json ./src/typeorm-config-generation.ts",
+    "typeorm:config:prod": "node ./dist/typeorm-config-generation.js",
+    "typeorm:dev": "ts-node -r tsconfig-paths/register --project tsconfig.typeorm.json ./node_modules/typeorm/cli.js",
+    "typeorm:prod": "node ./node_modules/typeorm/cli.js",
+    "migration:create": "yarn typeorm:dev migration:create -n",
+    "migration:generate": "yarn typeorm:dev migration:generate -n",
+    "m:c": "yarn migration:create",
+    "m:g": "yarn migration:generate",
+    "migration:run:dev": "yarn typeorm:dev migration:run",
+    "m:r": "yarn migration:run:dev",
+    "migration:run:prod": "yarn typeorm:prod migration:run"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -35,7 +44,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.3.6"
+    "typeorm": "^0.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
@@ -47,6 +56,9 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.1",
+    "dotenv-cli": "^5.1.0",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",

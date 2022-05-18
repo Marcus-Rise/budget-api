@@ -17,6 +17,7 @@ RUN chown nestjs:nodejs ./
 USER nestjs
 
 CMD yarn typeorm:config:prod \
+    && yarn migration:run:prod \
     && node dist/main.js
 
 EXPOSE 3000
