@@ -21,6 +21,7 @@ const databaseConfigFactory: ConfigFactory<DatabaseConfig> = () => {
     cli: {
       migrationsDir,
     },
+    synchronize: false,
   };
 };
 
