@@ -45,6 +45,8 @@ jobs:
           DATABASE_USER: ${{ secrets.DATABASE_USER }}
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          ADMINER_USER: ${{ secrets.ADMINER_USER }}
+          ADMINER_PASSWORD: ${{ secrets.ADMINER_PASSWORD }}
         run: |
           eval "echo \"$(cat .env.ci)\"" > .env
           docker compose pull
