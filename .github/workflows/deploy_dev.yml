@@ -30,12 +30,12 @@ jobs:
           IMAGE=$(echo ${{ github.repository }} | tr [:upper:] [:lower:])
           echo "IMAGE=ghcr.io/${IMAGE}" >> $GITHUB_ENV
 
-      - name: Setup version
+      - name: Setup version for PR
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           echo "VERSION=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
 
-      - name: Setup version
+      - name: Setup version for not PR
         if: ${{ github.event_name != 'pull_request' }}
         run: |
           echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV

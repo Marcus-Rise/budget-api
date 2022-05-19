@@ -1,17 +1,19 @@
-import { CreateUserDto } from '../dto/create-user.dto';
+import { UserCreateDto } from '../dto/user-create.dto';
 import { User } from './user.entity';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserUpdateDto } from '../dto/user-update.dto';
 
 class UserEntityFactory {
-  static fromCreateDto(dto: CreateUserDto): User {
+  static fromCreateDto(dto: UserCreateDto): User {
     const user = new User();
 
     user.login = dto.login;
+    user.password = dto.password;
+    user.isActive = dto.isActive;
 
     return user;
   }
 
-  static fromUpdateDto(dto: UpdateUserDto): User {
+  static fromUpdateDto(dto: UserUpdateDto): User {
     const user = new User();
 
     user.login = dto.login;

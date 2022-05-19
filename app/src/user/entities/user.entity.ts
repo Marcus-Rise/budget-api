@@ -8,8 +8,11 @@ class User {
   @Column()
   login: string;
 
-  @Column({ default: true })
+  @Column({ default: false })
   isActive: boolean;
+
+  @Column({ nullable: true })
+  password: string;
 }
 
 export { User };
