@@ -1,4 +1,5 @@
 interface IAuthJwtPayload {
+  id: number;
   username: string;
 }
 

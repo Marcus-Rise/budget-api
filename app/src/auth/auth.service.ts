@@ -33,7 +33,7 @@ class AuthService {
   }
 
   async generateToken(user: UserWithoutPassword) {
-    const payload: IAuthJwtPayload = { username: user.login };
+    const payload: IAuthJwtPayload = { username: user.login, id: user.id };
     const token = await this._jwtService.signAsync(payload);
 
     return {

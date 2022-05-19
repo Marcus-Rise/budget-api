@@ -2,6 +2,8 @@ import { ConfigFactory } from '@nestjs/config/dist/interfaces/config-factory.int
 import { registerAs } from '@nestjs/config';
 import { JwtModuleOptions } from '@nestjs/jwt/dist/interfaces/jwt-module-options.interface';
 
+const JWT_CONFIG_TOKEN = 'jwt';
+
 type JwtConfig = JwtModuleOptions;
 
 const jwtConfigFactory: ConfigFactory<JwtConfig> = () => ({
@@ -10,8 +12,7 @@ const jwtConfigFactory: ConfigFactory<JwtConfig> = () => ({
     expiresIn: '60s',
   },
 });
+const jwtConfig = registerAs(JWT_CONFIG_TOKEN, jwtConfigFactory);
 
-const jwtConfig = registerAs('jwt', jwtConfigFactory);
-
-export { jwtConfig };
+export { jwtConfig, JWT_CONFIG_TOKEN };
 export type { JwtConfig };
