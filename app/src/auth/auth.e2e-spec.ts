@@ -3,19 +3,21 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { AuthLocalStrategy } from './strategy/auth-local.strategy';
 
 const registerUser = jest.fn();
+const validateUser = jest.fn();
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [],
       providers: [
+        AuthLocalStrategy,
         {
           provide: AuthService,
-          useValue: { registerUser },
+          useValue: { registerUser, validateUser },
         },
       ],
       controllers: [AuthController],
@@ -26,6 +28,24 @@ describe('AuthController (e2e)', () => {
     app.useGlobalPipes(new ValidationPipe());
 
     await app.init();
+  });
+
+  describe('login', () => {
+    const loginUrl = '/api/auth/login';
+
+    it('should accept valid dto', () => {
+      const dto = { login: 'login', password: 'password' };
+
+      validateUser.mockReturnValueOnce(dto);
+
+      return request(app.getHttpServer()).post(loginUrl).send(dto).expect(200).expect(dto);
+    });
+
+    it('should return 401 on empty dto', () => {
+      const dto = { login: '', password: '' };
+
+      return request(app.getHttpServer()).post(loginUrl).send(dto).expect(401);
+    });
   });
 
   describe('register', () => {
