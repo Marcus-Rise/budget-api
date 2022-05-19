@@ -4,6 +4,9 @@ import { UserService } from './user.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 
+const findOne = jest.fn();
+const update = jest.fn();
+
 describe('UserController', () => {
   let controller: UserController;
 
@@ -13,7 +16,7 @@ describe('UserController', () => {
       providers: [
         {
           provide: getRepositoryToken(User),
-          useValue: {},
+          useValue: { findOne, update },
         },
         UserService,
       ],
@@ -24,5 +27,25 @@ describe('UserController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('findOne', () => {
+    it('should return user without password', async () => {
+      findOne.mockReturnValueOnce({ password: 'pas' });
+
+      const user = await controller.findOne('');
+
+      expect(user).not.toHaveProperty('password');
+    });
+  });
+
+  describe('update', () => {
+    it('should return user without password', async () => {
+      update.mockReturnValueOnce({ password: 'pas' });
+
+      const user = await controller.update('', {});
+
+      expect(user).not.toHaveProperty('password');
+    });
   });
 });

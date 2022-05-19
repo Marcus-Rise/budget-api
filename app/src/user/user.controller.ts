@@ -12,18 +12,17 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const user = await this.userService.findOne(+id);
+
+    delete user.password;
+
+    return user;
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UserUpdateDto) {
+  async update(@Param('id') id: string, @Body() updateUserDto: UserUpdateDto) {
     return this.userService.update(+id, updateUserDto);
   }
 
