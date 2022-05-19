@@ -19,12 +19,12 @@ jobs:
           IMAGE_NAME=$(echo ${{ github.repository }} | tr [:upper:] [:lower:])
           echo "IMAGE_NAME=ghcr.io/${IMAGE_NAME}" >> $GITHUB_ENV
 
-      - name: Setup version
+      - name: Setup version for PR
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           echo "VERSION=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
 
-      - name: Setup version
+      - name: Setup version for not PR
         if: ${{ github.event_name != 'pull_request' }}
         run: |
           echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
@@ -69,7 +69,7 @@ jobs:
 
       - name: Build
         working-directory: app
-        run: | 
+        run: |
           yarn build
           yarn install --prefer-offline --frozen-lockfile --prod
 
