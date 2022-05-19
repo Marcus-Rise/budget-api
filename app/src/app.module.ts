@@ -12,8 +12,8 @@ import { AuthModule } from './auth/auth.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule.forFeature(databaseConfig)],
-      useFactory: (config: DatabaseConfig) => config,
       inject: [databaseConfig.KEY],
+      useFactory: (config: DatabaseConfig) => config,
     }),
     UserModule,
     AuthModule,

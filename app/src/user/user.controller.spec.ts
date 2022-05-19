@@ -29,11 +29,11 @@ describe('UserController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('findOne', () => {
+  describe('me', () => {
     it('should return user without password', async () => {
       findOne.mockReturnValueOnce({ password: 'pas' });
 
-      const user = await controller.findOne('');
+      const user = await controller.me({ user: { id: 1, username: '' } });
 
       expect(user).not.toHaveProperty('password');
     });

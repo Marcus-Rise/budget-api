@@ -47,6 +47,7 @@ jobs:
           DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
           ADMINER_USER: ${{ secrets.ADMINER_USER }}
           ADMINER_PASSWORD: ${{ secrets.ADMINER_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           eval "echo \"$(cat .env.ci)\"" > .env
           docker compose pull

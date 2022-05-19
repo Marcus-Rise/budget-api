@@ -1,0 +1,2 @@
+GET {{url}}/api/user
+Authorization: Bearer {{auth_token}}

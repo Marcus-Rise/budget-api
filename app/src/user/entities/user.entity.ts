@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 class User {
@@ -6,6 +6,7 @@ class User {
   id: number;
 
   @Column()
+  @Index({ unique: true })
   login: string;
 
   @Column({ default: false })
