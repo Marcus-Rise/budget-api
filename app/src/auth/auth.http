@@ -21,6 +21,8 @@ Content-Type: application/json
 }
 
 > {%
+client.global.set("auth_token", response.body.access_token);
+
 client.test("Request executed successfully", function() {
   client.assert(response.status === 200, "Response status is not 200");
 });

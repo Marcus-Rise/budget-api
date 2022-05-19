@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserCreateDto } from './dto/user-create.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { Repository } from 'typeorm';
@@ -15,6 +15,12 @@ export class UserService {
   ) {}
 
   async create(dto: UserCreateDto) {
+    const existingUser = await this._repo.findOne({ login: dto.login });
+
+    if (!!existingUser) {
+      throw new BadRequestException();
+    }
+
     const user = UserEntityFactory.fromCreateDto(dto);
 
     user.password = await this.hashPassword(user.password);

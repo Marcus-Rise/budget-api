@@ -2,8 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
+import { BadRequestException } from '@nestjs/common';
 
 const saveUser = jest.fn();
+const findOne = jest.fn();
 
 describe('UserService', () => {
   let service: UserService;
@@ -13,13 +15,17 @@ describe('UserService', () => {
       providers: [
         {
           provide: getRepositoryToken(User),
-          useValue: { save: saveUser },
+          useValue: { save: saveUser, findOne },
         },
         UserService,
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
+  });
+
+  afterEach(() => {
+    saveUser.mockReset();
   });
 
   it('should be defined', () => {
@@ -38,6 +44,16 @@ describe('UserService', () => {
       expect(password).not.toEqual(dto.password);
       expect(password).toEqual(hashedPassword);
       expect(user).toMatchObject(user);
+    });
+
+    it('should prevent creating same login user', async () => {
+      const dto = { isActive: false, login: 'login', password: '' };
+
+      await service.create(dto);
+
+      findOne.mockReturnValueOnce({});
+
+      await expect(service.create(dto)).rejects.toThrow(new BadRequestException());
     });
   });
 });
