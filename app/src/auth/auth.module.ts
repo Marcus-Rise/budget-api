@@ -4,9 +4,20 @@ import { AuthController } from './auth.controller';
 import { UserModule } from '../user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { AuthLocalStrategy } from './strategy/auth-local.strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
+import { JwtConfig, jwtConfig } from './config/jwt.config';
 
 @Module({
-  imports: [UserModule, PassportModule],
+  imports: [
+    UserModule,
+    PassportModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule.forFeature(jwtConfig)],
+      inject: [jwtConfig.KEY],
+      useFactory: (config: JwtConfig) => config,
+    }),
+  ],
   providers: [AuthService, AuthLocalStrategy],
   controllers: [AuthController],
 })

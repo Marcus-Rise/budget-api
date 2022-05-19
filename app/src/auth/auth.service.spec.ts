@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
+import { JwtService } from '@nestjs/jwt';
 
 const createUser = jest.fn();
 const checkPassword = jest.fn();
+const generateJwt = jest.fn();
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -16,6 +18,7 @@ describe('AuthService', () => {
           provide: UserService,
           useValue: { create: createUser, checkPassword },
         },
+        { provide: JwtService, useValue: { signAsync: generateJwt } },
       ],
     }).compile();
 
@@ -51,6 +54,17 @@ describe('AuthService', () => {
 
       expect(login).toEqual(dto.login);
       expect(isActive).toBeFalsy();
+    });
+  });
+
+  describe('generateToken', () => {
+    it('should return generated token', async () => {
+      const token = 'token';
+      generateJwt.mockReturnValueOnce(token);
+
+      const { access_token } = await service.generateToken({ isActive: false, login: 'l', id: 1 });
+
+      expect(access_token).toEqual(token);
     });
   });
 });

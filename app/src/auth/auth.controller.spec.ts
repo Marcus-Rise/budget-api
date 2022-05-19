@@ -3,6 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 const registerUser = jest.fn();
+const generateToken = jest.fn();
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -12,7 +13,7 @@ describe('AuthController', () => {
       providers: [
         {
           provide: AuthService,
-          useValue: { registerUser },
+          useValue: { registerUser, generateToken },
         },
       ],
       controllers: [AuthController],
@@ -33,6 +34,19 @@ describe('AuthController', () => {
       const res = await controller.register({ password: '', login: '' });
 
       expect(res).toEqual(result);
+    });
+  });
+
+  describe('login', () => {
+    it('should return token', async () => {
+      const token = 'token';
+      generateToken.mockReturnValueOnce({ access_token: token });
+
+      const { access_token } = await controller.login({
+        user: { isActive: false, login: 'l', id: 1 },
+      });
+
+      expect(access_token).toEqual(token);
     });
   });
 });

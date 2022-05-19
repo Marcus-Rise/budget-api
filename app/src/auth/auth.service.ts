@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { User } from '../user/entities/user.entity';
 import { AuthRegistrationDto } from './dto/auth-registration.dto';
-
-type UserWithoutPassword = Omit<User, 'password'>;
+import { UserWithoutPassword } from './authed-user';
+import { IAuthJwtPayload } from './auth-jwt-payload.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 class AuthService {
-  constructor(private readonly _userService: UserService) {}
+  constructor(
+    private readonly _userService: UserService,
+    private readonly _jwtService: JwtService,
+  ) {}
 
   async validateUser(login: string, password: string): Promise<UserWithoutPassword | null> {
     const user = await this._userService.checkPassword(password, login);
@@ -27,6 +30,15 @@ class AuthService {
     delete user.password;
 
     return user;
+  }
+
+  async generateToken(user: UserWithoutPassword) {
+    const payload: IAuthJwtPayload = { username: user.login };
+    const token = await this._jwtService.signAsync(payload);
+
+    return {
+      access_token: token,
+    };
   }
 }
 
