@@ -11,7 +11,7 @@ class User {
   @Column({ default: false })
   isActive: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 }
 
