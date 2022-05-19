@@ -18,7 +18,7 @@ class AuthService {
 
     delete user.password;
 
-    return null;
+    return user;
   }
 
   async registerUser(dto: AuthRegistrationDto): Promise<UserWithoutPassword> {

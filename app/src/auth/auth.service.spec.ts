@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 
 const createUser = jest.fn();
+const checkPassword = jest.fn();
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -13,7 +14,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: UserService,
-          useValue: { create: createUser },
+          useValue: { create: createUser, checkPassword },
         },
       ],
     }).compile();
@@ -23,6 +24,22 @@ describe('AuthService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('validateUser', () => {
+    it('should return user without password', async () => {
+      checkPassword.mockReturnValueOnce({ password: 'p' });
+      const res = await service.validateUser('login', 'password');
+
+      expect(res).not.toHaveProperty('password');
+    });
+
+    it('should return null if password is not valid', async () => {
+      checkPassword.mockReturnValueOnce(null);
+      const res = await service.validateUser('login', 'password');
+
+      expect(res).toBeNull();
+    });
   });
 
   describe('registerUser', () => {
