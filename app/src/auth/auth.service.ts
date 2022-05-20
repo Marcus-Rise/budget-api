@@ -13,7 +13,7 @@ class AuthService {
   ) {}
 
   async validateUser(login: string, password: string): Promise<UserWithoutPassword | null> {
-    const user = await this._userService.checkPassword(password, login);
+    const user = await this._userService.findByPassword(password, login);
 
     if (!user) {
       return null;

@@ -4,7 +4,7 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 
 const createUser = jest.fn();
-const checkPassword = jest.fn();
+const findByPassword = jest.fn();
 const generateJwt = jest.fn();
 
 describe('AuthService', () => {
@@ -16,7 +16,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: UserService,
-          useValue: { create: createUser, checkPassword },
+          useValue: { create: createUser, findByPassword },
         },
         { provide: JwtService, useValue: { signAsync: generateJwt } },
       ],
@@ -31,14 +31,14 @@ describe('AuthService', () => {
 
   describe('validateUser', () => {
     it('should return user without password', async () => {
-      checkPassword.mockReturnValueOnce({ password: 'p' });
+      findByPassword.mockReturnValueOnce({ password: 'p' });
       const res = await service.validateUser('login', 'password');
 
       expect(res).not.toHaveProperty('password');
     });
 
     it('should return null if password is not valid', async () => {
-      checkPassword.mockReturnValueOnce(null);
+      findByPassword.mockReturnValueOnce(null);
       const res = await service.validateUser('login', 'password');
 
       expect(res).toBeNull();
