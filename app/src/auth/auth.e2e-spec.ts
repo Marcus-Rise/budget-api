@@ -55,12 +55,16 @@ describe('AuthController (e2e)', () => {
   describe('register', () => {
     const registerUrl = '/api/auth/register';
 
-    it('should accept valid dto', () => {
+    it('should accept valid dto', async () => {
       const dto = { login: 'login', password: 'password' };
 
-      registerUser.mockReturnValueOnce(dto);
+      await request(app.getHttpServer())
+        .post(registerUrl)
+        .send(dto)
+        .expect(201)
+        .expect({ status: 'ok' });
 
-      return request(app.getHttpServer()).post(registerUrl).send(dto).expect(201).expect(dto);
+      expect(registerUser).toHaveBeenNthCalledWith(1, dto);
     });
 
     it('should return 400 on empty dto', () => {

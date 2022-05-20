@@ -28,9 +28,11 @@ describe('AuthController', () => {
 
   describe('register', () => {
     it('should return ok', async () => {
-      const res = await controller.register({ password: '', login: '' });
+      const dto = { password: '', login: '' };
+      const res = await controller.register(dto);
 
       expect(res).toMatchObject({ status: 'ok' });
+      expect(registerUser).toHaveBeenNthCalledWith(1, dto);
     });
   });
 
