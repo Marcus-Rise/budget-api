@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Request, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, NotFoundException, Request, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserUpdateDto } from './dto/user-update.dto';
 import { AuthJwtGuard } from '../auth/guard/auth-jwt.guard';
 import { IAuthJwtPayload } from '../auth/auth-jwt-payload.interface';
 
@@ -13,20 +12,22 @@ export class UserController {
   async me(@Request() req: { user: IAuthJwtPayload }) {
     const user = await this._userService.findOne(req.user.id);
 
+    if (!user) {
+      throw new NotFoundException();
+    }
+
     delete user.password;
 
     return user;
   }
 
   @UseGuards(AuthJwtGuard)
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UserUpdateDto) {
-    return this._userService.update(+id, updateUserDto);
-  }
+  @Delete()
+  async remove(@Request() req: { user: IAuthJwtPayload }) {
+    await this._userService.remove(req.user.id);
 
-  @UseGuards(AuthJwtGuard)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this._userService.remove(+id);
+    return {
+      status: 'ok',
+    };
   }
 }

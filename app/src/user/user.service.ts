@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserCreateDto } from './dto/user-create.dto';
-import { UserUpdateDto } from './dto/user-update.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -52,10 +51,6 @@ export class UserService {
     return this._repo.findOne({
       id,
     });
-  }
-
-  update(id: number, updateUserDto: UserUpdateDto) {
-    return `This action updates a #${id} user`;
   }
 
   remove(id: number) {

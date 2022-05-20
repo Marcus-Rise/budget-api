@@ -27,13 +27,12 @@ describe('AuthController', () => {
   });
 
   describe('register', () => {
-    it('should return service result', async () => {
-      const result = true;
-      registerUser.mockReturnValueOnce(result);
+    it('should return ok', async () => {
+      const dto = { password: '', login: '' };
+      const res = await controller.register(dto);
 
-      const res = await controller.register({ password: '', login: '' });
-
-      expect(res).toEqual(result);
+      expect(res).toMatchObject({ status: 'ok' });
+      expect(registerUser).toHaveBeenNthCalledWith(1, dto);
     });
   });
 

@@ -53,7 +53,7 @@ describe('UserService', () => {
 
       findOne.mockReturnValueOnce({});
 
-      await expect(service.create(dto)).rejects.toThrow(new BadRequestException());
+      await expect(service.create(dto)).rejects.toThrow(BadRequestException);
     });
   });
 });

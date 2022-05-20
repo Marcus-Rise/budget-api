@@ -16,7 +16,11 @@ export class AuthController {
   }
 
   @Post('/register')
-  register(@Body() dto: AuthRegistrationDto) {
-    return this._service.registerUser(dto);
+  async register(@Body() dto: AuthRegistrationDto) {
+    await this._service.registerUser(dto);
+
+    return {
+      status: 'ok',
+    };
   }
 }

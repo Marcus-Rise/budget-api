@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { NotFoundException } from '@nestjs/common';
 
 const findOne = jest.fn();
-const update = jest.fn();
+const remove = jest.fn();
 
 describe('UserController', () => {
   let controller: UserController;
@@ -15,14 +14,18 @@ describe('UserController', () => {
       controllers: [UserController],
       providers: [
         {
-          provide: getRepositoryToken(User),
-          useValue: { findOne, update },
+          provide: UserService,
+          useValue: { findOne, remove },
         },
-        UserService,
       ],
     }).compile();
 
     controller = module.get<UserController>(UserController);
+  });
+
+  afterEach(() => {
+    remove.mockReset();
+    findOne.mockReset();
   });
 
   it('should be defined', () => {
@@ -37,15 +40,21 @@ describe('UserController', () => {
 
       expect(user).not.toHaveProperty('password');
     });
+
+    it('should throw not found exception', async () => {
+      findOne.mockReturnValueOnce(null);
+
+      await expect(controller.me({ user: { id: 1, username: '' } })).rejects.toThrow(
+        NotFoundException,
+      );
+    });
   });
 
-  describe('update', () => {
-    it('should return user without password', async () => {
-      update.mockReturnValueOnce({ password: 'pas' });
+  describe('remove', () => {
+    it('should remove user', async () => {
+      await controller.remove({ user: { id: 1, username: '' } });
 
-      const user = await controller.update('', {});
-
-      expect(user).not.toHaveProperty('password');
+      expect(remove).toHaveBeenCalledTimes(1);
     });
   });
 });
