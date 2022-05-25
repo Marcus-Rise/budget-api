@@ -7,13 +7,10 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 class AuthService {
-  constructor(
-    private readonly _userService: UserService,
-    private readonly _jwtService: JwtService,
-  ) {}
+  constructor(private readonly _users: UserService, private readonly _jwt: JwtService) {}
 
   async validateUser(login: string, password: string): Promise<UserWithoutPassword | null> {
-    const user = await this._userService.findByPassword(password, login);
+    const user = await this._users.findByPassword(password, login);
 
     if (!user) {
       return null;
@@ -25,7 +22,7 @@ class AuthService {
   }
 
   async registerUser(dto: AuthRegistrationDto): Promise<UserWithoutPassword> {
-    const user = await this._userService.create({ isActive: false, ...dto });
+    const user = await this._users.create({ isActive: false, ...dto });
 
     delete user.password;
 
@@ -35,7 +32,7 @@ class AuthService {
   async generateToken(user: UserWithoutPassword) {
     const payload: IAuthJwtPayload = { username: user.login, id: user.id };
 
-    return this._jwtService.signAsync(payload);
+    return this._jwt.signAsync(payload);
   }
 }
 
