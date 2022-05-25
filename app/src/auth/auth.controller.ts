@@ -11,8 +11,10 @@ export class AuthController {
   @UseGuards(AuthLocalGuard)
   @Post('/login')
   @HttpCode(200)
-  login(@Request() req: { user: UserWithoutPassword }) {
-    return this._service.generateToken(req.user);
+  async login(@Request() req: { user: UserWithoutPassword }) {
+    const token = await this._service.generateToken(req.user);
+
+    return { access_token: token };
   }
 
   @Post('/register')

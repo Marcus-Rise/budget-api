@@ -62,9 +62,9 @@ describe('AuthService', () => {
       const token = 'token';
       generateJwt.mockReturnValueOnce(token);
 
-      const { access_token } = await service.generateToken({ isActive: false, login: 'l', id: 1 });
+      const accessToken = await service.generateToken({ isActive: false, login: 'l', id: 1 });
 
-      expect(access_token).toEqual(token);
+      expect(accessToken).toEqual(token);
     });
   });
 });

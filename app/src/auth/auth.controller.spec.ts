@@ -39,7 +39,7 @@ describe('AuthController', () => {
   describe('login', () => {
     it('should return token', async () => {
       const token = 'token';
-      generateToken.mockReturnValueOnce({ access_token: token });
+      generateToken.mockReturnValueOnce(token);
 
       const { access_token } = await controller.login({
         user: { isActive: false, login: 'l', id: 1 },

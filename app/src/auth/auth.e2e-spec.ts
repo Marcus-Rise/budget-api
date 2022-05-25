@@ -39,10 +39,14 @@ describe('AuthController (e2e)', () => {
 
       validateUser.mockReturnValueOnce(dto);
 
-      const token = { access_token: 'token' };
+      const token = 'token';
       generateToken.mockReturnValueOnce(token);
 
-      return request(app.getHttpServer()).post(loginUrl).send(dto).expect(200).expect(token);
+      return request(app.getHttpServer())
+        .post(loginUrl)
+        .send(dto)
+        .expect(200)
+        .expect({ access_token: token });
     });
 
     it('should return 401 on empty dto', () => {
