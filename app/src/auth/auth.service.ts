@@ -60,6 +60,10 @@ class AuthService {
       },
     );
   }
+
+  async generateAccessTokenFromRefreshToken(refreshToken: string): Promise<string> {
+    return '';
+  }
 }
 
 export { AuthService };
