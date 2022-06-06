@@ -4,11 +4,15 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { RefreshToken } from './entities/refresh-token.entity';
+import { RefreshTokenEntityFactory } from './entities/refresh-token.entity.factory';
 
 const createUser = jest.fn();
 const findByPassword = jest.fn();
+const findUserById = jest.fn();
 const generateJwt = jest.fn();
+const verifyJwt = jest.fn();
 const saveRefreshToken = jest.fn();
+const findRefreshToken = jest.fn();
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -19,10 +23,13 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: UserService,
-          useValue: { create: createUser, findByPassword },
+          useValue: { create: createUser, findByPassword, findOne: findUserById },
         },
-        { provide: getRepositoryToken(RefreshToken), useValue: { save: saveRefreshToken } },
-        { provide: JwtService, useValue: { signAsync: generateJwt } },
+        {
+          provide: getRepositoryToken(RefreshToken),
+          useValue: { save: saveRefreshToken, findOne: findRefreshToken },
+        },
+        { provide: JwtService, useValue: { signAsync: generateJwt, verifyAsync: verifyJwt } },
       ],
     }).compile();
 
@@ -88,6 +95,27 @@ describe('AuthService', () => {
 
       expect(saveRefreshToken).toHaveBeenCalledTimes(1);
       expect(refreshToken).toEqual(token);
+    });
+  });
+
+  describe('generateAccessTokenFromRefreshToken', () => {
+    it('should generate token', async () => {
+      verifyJwt.mockReturnValueOnce({ jti: 1, sub: 1 });
+
+      const refreshToken = RefreshTokenEntityFactory.create(
+        { id: 1, login: '', isActive: true },
+        10000,
+      );
+      findRefreshToken.mockReturnValueOnce(refreshToken);
+
+      const user = { id: 1 };
+      findUserById.mockReturnValueOnce(user);
+
+      service.generateToken = jest.fn();
+
+      await service.generateAccessTokenFromRefreshToken('');
+
+      expect(service.generateToken).toHaveBeenNthCalledWith(1, user);
     });
   });
 });

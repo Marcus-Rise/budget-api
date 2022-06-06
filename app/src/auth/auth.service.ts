@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { AuthRegistrationDto } from './dto/auth-registration.dto';
 import { UserWithoutPassword } from './authed-user';
@@ -62,7 +62,33 @@ class AuthService {
   }
 
   async generateAccessTokenFromRefreshToken(refreshToken: string): Promise<string> {
-    return '';
+    const { jti: tokenId, sub: userId } = await this._jwt.verifyAsync(refreshToken);
+
+    const token = await this._refreshToken.findOne({ id: tokenId });
+
+    if (!token) {
+      throw new UnprocessableEntityException('Refresh token not found');
+    }
+
+    const now = Date.now();
+
+    if (token.expires.valueOf() < now) {
+      await this._refreshToken.remove(token);
+
+      throw new UnprocessableEntityException('Refresh token expired');
+    }
+
+    if (token.isRevoked) {
+      throw new UnprocessableEntityException('Refresh token revoked');
+    }
+
+    const user = await this._users.findOne(userId);
+
+    if (!user) {
+      throw new UnprocessableEntityException('Refresh token malformed');
+    }
+
+    return this.generateToken(user);
   }
 }
 
