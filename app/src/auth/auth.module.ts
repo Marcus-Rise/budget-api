@@ -7,9 +7,12 @@ import { AuthLocalStrategy } from './strategy/auth-local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { JwtConfig, jwtConfig } from './config/jwt.config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { RefreshToken } from './entities/refresh-token.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([RefreshToken]),
     UserModule,
     PassportModule,
     JwtModule.registerAsync({

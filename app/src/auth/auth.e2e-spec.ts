@@ -8,6 +8,7 @@ import { AuthLocalStrategy } from './strategy/auth-local.strategy';
 const registerUser = jest.fn();
 const validateUser = jest.fn();
 const generateToken = jest.fn();
+const generateRefreshToken = jest.fn();
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -18,7 +19,7 @@ describe('AuthController (e2e)', () => {
         AuthLocalStrategy,
         {
           provide: AuthService,
-          useValue: { registerUser, validateUser, generateToken },
+          useValue: { registerUser, validateUser, generateToken, generateRefreshToken },
         },
       ],
       controllers: [AuthController],
@@ -40,13 +41,15 @@ describe('AuthController (e2e)', () => {
       validateUser.mockReturnValueOnce(dto);
 
       const token = 'token';
+      const refreshToken = 'refresh-token';
       generateToken.mockReturnValueOnce(token);
+      generateRefreshToken.mockReturnValueOnce(refreshToken);
 
       return request(app.getHttpServer())
         .post(loginUrl)
         .send(dto)
         .expect(200)
-        .expect({ access_token: token });
+        .expect({ type: 'bearer', access_token: token, refresh_token: refreshToken });
     });
 
     it('should return 401 on empty dto', () => {

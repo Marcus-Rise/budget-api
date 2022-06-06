@@ -2,10 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { RefreshToken } from './entities/refresh-token.entity';
 
 const createUser = jest.fn();
 const findByPassword = jest.fn();
 const generateJwt = jest.fn();
+const saveRefreshToken = jest.fn();
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -18,6 +21,7 @@ describe('AuthService', () => {
           provide: UserService,
           useValue: { create: createUser, findByPassword },
         },
+        { provide: getRepositoryToken(RefreshToken), useValue: { save: saveRefreshToken } },
         { provide: JwtService, useValue: { signAsync: generateJwt } },
       ],
     }).compile();
@@ -65,6 +69,25 @@ describe('AuthService', () => {
       const accessToken = await service.generateToken({ isActive: false, login: 'l', id: 1 });
 
       expect(accessToken).toEqual(token);
+    });
+  });
+
+  describe('generateRefreshToken', () => {
+    it('should return generated refresh token', async () => {
+      const token = 'refresh-token';
+      generateJwt.mockReturnValueOnce(token);
+
+      saveRefreshToken.mockReturnValueOnce({
+        id: 1,
+      });
+
+      const refreshToken = await service.generateRefreshToken(
+        { isActive: false, login: 'l', id: 1 },
+        1,
+      );
+
+      expect(saveRefreshToken).toHaveBeenCalledTimes(1);
+      expect(refreshToken).toEqual(token);
     });
   });
 });

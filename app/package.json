@@ -28,6 +28,8 @@
     "migration:generate": "yarn typeorm migration:generate -n",
     "m:c": "yarn migration:create",
     "m:g": "yarn migration:generate",
+    "entity:create": "yarn typeorm entity:create -n",
+    "e:c": "yarn entity:create",
     "migration:run": "yarn typeorm migration:run",
     "m:r": "yarn migration:run",
     "migration:run:prod": "yarn typeorm:prod migration:run"
