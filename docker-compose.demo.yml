@@ -35,6 +35,9 @@ services:
     networks:
       - default
       - internal
+    environment:
+      JWT_ISSUER: ${HOST}
+      JWT_AUDIENCE: ${HOST}
     env_file:
       - .env
 
