@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { RefreshTokenEntityFactory } from './entities/refresh-token.entity.factory';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 const createUser = jest.fn();
 const findByPassword = jest.fn();
@@ -116,6 +117,16 @@ describe('AuthService', () => {
       await service.generateAccessTokenFromRefreshToken('');
 
       expect(service.generateToken).toHaveBeenNthCalledWith(1, user);
+    });
+
+    it('should throw error if token is not exists', async () => {
+      verifyJwt.mockReturnValueOnce({ jti: 1, sub: 1 });
+
+      findRefreshToken.mockReturnValueOnce(undefined);
+
+      await expect(service.generateAccessTokenFromRefreshToken('')).rejects.toThrow(
+        UnprocessableEntityException,
+      );
     });
   });
 });
