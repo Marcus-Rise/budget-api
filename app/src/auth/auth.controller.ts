@@ -6,8 +6,6 @@ import { AuthLocalGuard } from './guard/auth-local.guard';
 import { AuthJwtGuard } from './guard/auth-jwt.guard';
 import { AuthRefreshDto } from './dto/auth-refresh.dto';
 
-const REFRESH_TOKEN_EXPIRES_IN = 60 * 60 * 24 * 2;
-
 @Controller('/api/auth')
 export class AuthController {
   constructor(private readonly _service: AuthService) {}
@@ -26,10 +24,7 @@ export class AuthController {
   @HttpCode(200)
   async login(@Request() req: { user: UserWithoutPassword }) {
     const token = await this._service.generateToken(req.user);
-    const refreshToken = await this._service.generateRefreshToken(
-      req.user,
-      REFRESH_TOKEN_EXPIRES_IN,
-    );
+    const refreshToken = await this._service.generateRefreshToken(req.user);
 
     return { type: 'bearer', access_token: token, refresh_token: refreshToken };
   }

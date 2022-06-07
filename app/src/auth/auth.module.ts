@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtConfig, jwtConfig } from './config/jwt.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshToken } from './entities/refresh-token.entity';
+import { authConfig } from './config/auth.config';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RefreshToken } from './entities/refresh-token.entity';
       inject: [jwtConfig.KEY],
       useFactory: (config: JwtConfig) => config,
     }),
+    ConfigModule.forFeature(authConfig),
   ],
   providers: [AuthService, AuthLocalStrategy],
   controllers: [AuthController],

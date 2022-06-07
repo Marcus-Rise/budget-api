@@ -6,6 +6,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { RefreshTokenEntityFactory } from './entities/refresh-token.entity.factory';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { authConfig } from './config/auth.config';
 
 const createUser = jest.fn();
 const findByPassword = jest.fn();
@@ -35,6 +36,7 @@ describe('AuthService', () => {
             remove: removeRefreshToken,
           },
         },
+        { provide: authConfig.KEY, useValue: {} },
         { provide: JwtService, useValue: { signAsync: generateJwt, verifyAsync: verifyJwt } },
       ],
     }).compile();
@@ -105,10 +107,11 @@ describe('AuthService', () => {
         id: 1,
       });
 
-      const refreshToken = await service.generateRefreshToken(
-        { isActive: false, login: 'l', id: 1 },
-        1,
-      );
+      const refreshToken = await service.generateRefreshToken({
+        isActive: false,
+        login: 'l',
+        id: 1,
+      });
 
       expect(saveRefreshToken).toHaveBeenCalledTimes(1);
       expect(refreshToken).toEqual(token);

@@ -1,4 +1,4 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { AuthRegistrationDto } from './dto/auth-registration.dto';
 import { UserWithoutPassword } from './authed-user';
@@ -8,6 +8,8 @@ import { Repository } from 'typeorm';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshTokenEntityFactory } from './entities/refresh-token.entity.factory';
+import { ConfigType } from '@nestjs/config';
+import { authConfig } from './config/auth.config';
 
 @Injectable()
 class AuthService {
@@ -16,6 +18,8 @@ class AuthService {
     private readonly _jwt: JwtService,
     @InjectRepository(RefreshToken)
     private readonly _refreshToken: Repository<RefreshToken>,
+    @Inject(authConfig.KEY)
+    private readonly _config: ConfigType<typeof authConfig>,
   ) {}
 
   async validateUser(login: string, password: string): Promise<UserWithoutPassword | null> {
@@ -46,7 +50,9 @@ class AuthService {
     });
   }
 
-  async generateRefreshToken(user: UserWithoutPassword, expiresIn: number) {
+  async generateRefreshToken(user: UserWithoutPassword) {
+    const expiresIn = this._config.sessionTTL;
+
     const refreshToken = await this._refreshToken.save(
       RefreshTokenEntityFactory.create(user, expiresIn),
     );
