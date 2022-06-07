@@ -93,6 +93,8 @@ class AuthService {
     const user = await this._users.findOne(userId);
 
     if (!user) {
+      await this._refreshToken.remove(token);
+
       throw new UnprocessableEntityException('Refresh token malformed');
     }
 
