@@ -14,6 +14,7 @@ const generateJwt = jest.fn();
 const verifyJwt = jest.fn();
 const saveRefreshToken = jest.fn();
 const findRefreshToken = jest.fn();
+const removeRefreshToken = jest.fn();
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -28,7 +29,11 @@ describe('AuthService', () => {
         },
         {
           provide: getRepositoryToken(RefreshToken),
-          useValue: { save: saveRefreshToken, findOne: findRefreshToken },
+          useValue: {
+            save: saveRefreshToken,
+            findOne: findRefreshToken,
+            remove: removeRefreshToken,
+          },
         },
         { provide: JwtService, useValue: { signAsync: generateJwt, verifyAsync: verifyJwt } },
       ],
@@ -127,6 +132,22 @@ describe('AuthService', () => {
       await expect(service.generateAccessTokenFromRefreshToken('')).rejects.toThrow(
         UnprocessableEntityException,
       );
+    });
+
+    it('should throw error if token is expired', async () => {
+      verifyJwt.mockReturnValueOnce({ jti: 1, sub: 1 });
+
+      const refreshToken = RefreshTokenEntityFactory.create(
+        { id: 1, login: '', isActive: true },
+        -100,
+      );
+      findRefreshToken.mockReturnValueOnce(refreshToken);
+
+      await expect(service.generateAccessTokenFromRefreshToken('')).rejects.toThrow(
+        UnprocessableEntityException,
+      );
+
+      expect(removeRefreshToken).toHaveBeenNthCalledWith(1, refreshToken);
     });
   });
 });
