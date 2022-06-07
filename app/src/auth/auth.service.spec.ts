@@ -42,6 +42,17 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
   });
 
+  afterEach(() => {
+    createUser.mockReset();
+    findByPassword.mockReset();
+    findUserById.mockReset();
+    generateJwt.mockReset();
+    verifyJwt.mockReset();
+    saveRefreshToken.mockReset();
+    findRefreshToken.mockReset();
+    removeRefreshToken.mockReset();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
@@ -141,6 +152,23 @@ describe('AuthService', () => {
         { id: 1, login: '', isActive: true },
         -100,
       );
+      findRefreshToken.mockReturnValueOnce(refreshToken);
+
+      await expect(service.generateAccessTokenFromRefreshToken('')).rejects.toThrow(
+        UnprocessableEntityException,
+      );
+
+      expect(removeRefreshToken).toHaveBeenNthCalledWith(1, refreshToken);
+    });
+
+    it('should throw error if token is revoked', async () => {
+      verifyJwt.mockReturnValueOnce({ jti: 1, sub: 1 });
+
+      const refreshToken = RefreshTokenEntityFactory.create(
+        { id: 1, login: '', isActive: true },
+        1000,
+      );
+      refreshToken.isRevoked = true;
       findRefreshToken.mockReturnValueOnce(refreshToken);
 
       await expect(service.generateAccessTokenFromRefreshToken('')).rejects.toThrow(

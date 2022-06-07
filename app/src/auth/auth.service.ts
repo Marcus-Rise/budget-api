@@ -79,6 +79,8 @@ class AuthService {
     }
 
     if (token.isRevoked) {
+      await this._refreshToken.remove(token);
+
       throw new UnprocessableEntityException('Refresh token revoked');
     }
 
