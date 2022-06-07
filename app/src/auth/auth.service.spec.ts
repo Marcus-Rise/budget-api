@@ -177,5 +177,23 @@ describe('AuthService', () => {
 
       expect(removeRefreshToken).toHaveBeenNthCalledWith(1, refreshToken);
     });
+
+    it('should throw error if token is revoked', async () => {
+      verifyJwt.mockReturnValueOnce({ jti: 1, sub: 1 });
+
+      const refreshToken = RefreshTokenEntityFactory.create(
+        { id: 1, login: '', isActive: true },
+        1000,
+      );
+      findRefreshToken.mockReturnValueOnce(refreshToken);
+
+      findUserById.mockReturnValueOnce(undefined);
+
+      await expect(service.generateAccessTokenFromRefreshToken('')).rejects.toThrow(
+        UnprocessableEntityException,
+      );
+
+      expect(removeRefreshToken).toHaveBeenNthCalledWith(1, refreshToken);
+    });
   });
 });
