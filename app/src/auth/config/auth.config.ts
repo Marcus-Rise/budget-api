@@ -8,7 +8,7 @@ type AuthConfig = {
 };
 
 const authConfigFactory: ConfigFactory<AuthConfig> = () => ({
-  sessionTTL: 60 * 60 * 24 * 2,
+  sessionTTL: parseInt(process.env.SESSION_TTL),
 });
 
 const authConfig = registerAs(AUTH_CONFIG_TOKEN, authConfigFactory);
