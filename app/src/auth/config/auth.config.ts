@@ -3,6 +3,9 @@ import { registerAs } from '@nestjs/config';
 
 const AUTH_CONFIG_TOKEN = 'auth';
 
+/**
+ * @property {number} sessionTTL - seconds
+ */
 type AuthConfig = {
   sessionTTL: number;
 };
