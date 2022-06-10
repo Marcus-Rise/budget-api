@@ -4,12 +4,13 @@ import { AuthRegistrationDto } from './dto/auth-registration.dto';
 import { UserWithoutPassword } from './authed-user';
 import { IAuthJwtPayload } from './auth-jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshTokenEntityFactory } from './entities/refresh-token.entity.factory';
 import { ConfigType } from '@nestjs/config';
 import { authConfig } from './config/auth.config';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 class AuthService {
@@ -102,6 +103,22 @@ class AuthService {
     }
 
     return this.generateToken(user);
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_1AM, {
+    name: 'clear-refresh-token',
+  })
+  async clearRefreshToken() {
+    const tokens = await this._refreshToken.find({
+      where: [
+        {
+          expires: LessThan(new Date().toISOString()),
+        },
+        { isRevoked: true },
+      ],
+    });
+
+    return this._refreshToken.remove(tokens);
   }
 }
 

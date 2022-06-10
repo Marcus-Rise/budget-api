@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseConfig, databaseConfig } from './config/database.config';
 import { AuthModule } from './auth/auth.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AuthModule } from './auth/auth.module';
       inject: [databaseConfig.KEY],
       useFactory: (config: DatabaseConfig) => config,
     }),
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
   ],
