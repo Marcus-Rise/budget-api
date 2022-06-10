@@ -51,6 +51,9 @@ class AuthService {
   }
 
   async generateRefreshToken(user: UserWithoutPassword) {
+    /**
+     * seconds
+     */
     const expiresIn = this._config.sessionTTL;
 
     const refreshToken = await this._refreshToken.save(
