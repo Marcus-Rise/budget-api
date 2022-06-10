@@ -7,9 +7,10 @@ import { RefreshToken } from './entities/refresh-token.entity';
 import { RefreshTokenEntityFactory } from './entities/refresh-token.entity.factory';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { authConfig } from './config/auth.config';
+import { UserEntityFactory } from '../user/entities/user.entity.factory';
 
 const createUser = jest.fn();
-const findByPassword = jest.fn();
+const findByLoginPassword = jest.fn();
 const findUserById = jest.fn();
 const generateJwt = jest.fn();
 const verifyJwt = jest.fn();
@@ -26,7 +27,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: UserService,
-          useValue: { create: createUser, findByPassword, findOne: findUserById },
+          useValue: { create: createUser, findByLoginPassword, findOne: findUserById },
         },
         {
           provide: getRepositoryToken(RefreshToken),
@@ -46,7 +47,7 @@ describe('AuthService', () => {
 
   afterEach(() => {
     createUser.mockReset();
-    findByPassword.mockReset();
+    findByLoginPassword.mockReset();
     findUserById.mockReset();
     generateJwt.mockReset();
     verifyJwt.mockReset();
@@ -61,14 +62,24 @@ describe('AuthService', () => {
 
   describe('validateUser', () => {
     it('should return user without password', async () => {
-      findByPassword.mockReturnValueOnce({ password: 'p' });
+      findByLoginPassword.mockReturnValueOnce(
+        UserEntityFactory.fromCreateDto({ isActive: true, password: 'p', login: 'l' }),
+      );
       const res = await service.validateUser('login', 'password');
 
       expect(res).not.toHaveProperty('password');
     });
 
     it('should return null if password is not valid', async () => {
-      findByPassword.mockReturnValueOnce(null);
+      findByLoginPassword.mockReturnValueOnce(null);
+      const res = await service.validateUser('login', 'password');
+
+      expect(res).toBeNull();
+    });
+
+    it('should return null if user is not active', async () => {
+      const user = UserEntityFactory.fromCreateDto({ isActive: false, login: 'l', password: 'p' });
+      findByLoginPassword.mockReturnValueOnce(user);
       const res = await service.validateUser('login', 'password');
 
       expect(res).toBeNull();

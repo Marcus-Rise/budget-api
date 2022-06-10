@@ -24,9 +24,9 @@ class AuthService {
   ) {}
 
   async validateUser(login: string, password: string): Promise<UserWithoutPassword | null> {
-    const user = await this._users.findByPassword(password, login);
+    const user = await this._users.findByLoginPassword(password, login);
 
-    if (!user) {
+    if (!user || !user.isActive) {
       return null;
     }
 
