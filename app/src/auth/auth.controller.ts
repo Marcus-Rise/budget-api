@@ -3,7 +3,6 @@ import { AuthRegistrationDto } from './dto/auth-registration.dto';
 import { AuthService } from './auth.service';
 import { UserWithoutPassword } from './authed-user';
 import { AuthLocalGuard } from './guard/auth-local.guard';
-import { AuthJwtGuard } from './guard/auth-jwt.guard';
 import { AuthRefreshDto } from './dto/auth-refresh.dto';
 
 @Controller('/api/auth')
@@ -29,7 +28,6 @@ export class AuthController {
     return { type: 'bearer', access_token: token, refresh_token: refreshToken };
   }
 
-  @UseGuards(AuthJwtGuard)
   @Post('/refresh')
   @HttpCode(200)
   async refresh(@Body() { refreshToken }: AuthRefreshDto) {

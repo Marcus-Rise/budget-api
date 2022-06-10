@@ -114,14 +114,6 @@ describe('AuthController (e2e)', () => {
     const refreshUrl = '/api/auth/refresh';
 
     it('should refresh token', async () => {
-      const user = {
-        isActive: false,
-        login: 'login',
-        id: 1,
-      };
-      const jwtService = app.get(JwtService);
-      const token = jwtService.sign(user, { secret: jwtConfig.secret });
-
       const generatedAccessToken = 'access_token';
       generateAccessTokenFromRefreshToken.mockReturnValueOnce(generatedAccessToken);
 
@@ -130,7 +122,6 @@ describe('AuthController (e2e)', () => {
       await request(app.getHttpServer())
         .post(refreshUrl)
         .send({ refresh_token: refreshToken })
-        .set('Authorization', `Bearer ${token}`)
         .expect(200)
         .expect({ type: 'bearer', access_token: generatedAccessToken })
         .expect(() => {
@@ -139,14 +130,6 @@ describe('AuthController (e2e)', () => {
     });
 
     it('should reject wrong dto', async () => {
-      const user = {
-        isActive: false,
-        login: 'login',
-        id: 1,
-      };
-      const jwtService = app.get(JwtService);
-      const token = jwtService.sign(user, { secret: jwtConfig.secret });
-
       const generatedAccessToken = 'access_token';
       generateAccessTokenFromRefreshToken.mockReturnValueOnce(generatedAccessToken);
 
@@ -155,7 +138,6 @@ describe('AuthController (e2e)', () => {
       return request(app.getHttpServer())
         .post(refreshUrl)
         .send({ refresh_token: refreshToken })
-        .set('Authorization', `Bearer ${token}`)
         .expect(400);
     });
   });
