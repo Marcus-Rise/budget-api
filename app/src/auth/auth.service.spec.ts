@@ -199,4 +199,30 @@ describe('AuthService', () => {
       expect(removeRefreshToken).toHaveBeenNthCalledWith(1, refreshToken);
     });
   });
+
+  describe('revokeRefreshToken', () => {
+    it('should revoke token', async () => {
+      verifyJwt.mockReturnValueOnce({ jti: 1 });
+      const refreshToken = RefreshTokenEntityFactory.create(
+        {
+          isActive: false,
+          login: '',
+          id: 2,
+        },
+        200,
+      );
+      findRefreshToken.mockReturnValueOnce(refreshToken);
+
+      await service.revokeRefreshToken('');
+
+      expect(saveRefreshToken).toHaveBeenNthCalledWith(1, { ...refreshToken, isRevoked: true });
+    });
+
+    it('should throw error if token is not exists', async () => {
+      verifyJwt.mockReturnValueOnce({ jti: 1 });
+      findRefreshToken.mockReturnValueOnce(undefined);
+
+      await expect(service.revokeRefreshToken('')).rejects.toThrow(UnprocessableEntityException);
+    });
+  });
 });

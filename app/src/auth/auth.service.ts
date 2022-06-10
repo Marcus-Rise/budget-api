@@ -120,6 +120,20 @@ class AuthService {
 
     return this._refreshToken.remove(tokens);
   }
+
+  async revokeRefreshToken(refreshToken: string) {
+    const { jti: tokenId } = await this._jwt.verifyAsync(refreshToken);
+
+    const token = await this._refreshToken.findOne({ id: tokenId });
+
+    if (!token) {
+      throw new UnprocessableEntityException('Refresh token not found');
+    }
+
+    token.isRevoked = true;
+
+    return this._refreshToken.save(token);
+  }
 }
 
 export { AuthService };
