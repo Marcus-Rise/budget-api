@@ -7,6 +7,7 @@ import { RefreshToken } from './entities/refresh-token.entity';
 import { RefreshTokenEntityFactory } from './entities/refresh-token.entity.factory';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { authConfig } from './config/auth.config';
+import { UserEntityFactory } from '../user/entities/user.entity.factory';
 
 const createUser = jest.fn();
 const findByPassword = jest.fn();
@@ -69,6 +70,14 @@ describe('AuthService', () => {
 
     it('should return null if password is not valid', async () => {
       findByPassword.mockReturnValueOnce(null);
+      const res = await service.validateUser('login', 'password');
+
+      expect(res).toBeNull();
+    });
+
+    it('should return null if user is not active', async () => {
+      const user = UserEntityFactory.fromCreateDto({ isActive: false, login: 'l', password: 'p' });
+      findByPassword.mockReturnValueOnce(user);
       const res = await service.validateUser('login', 'password');
 
       expect(res).toBeNull();

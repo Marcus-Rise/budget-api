@@ -31,7 +31,7 @@ export class UserService {
     return hash(password, 10);
   }
 
-  async findByPassword(password: string, login: string): Promise<User | null> {
+  async findByLoginPassword(password: string, login: string): Promise<User | null> {
     const user = await this._repo.findOne({ login });
 
     if (!user) {
