@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { UserWithoutPassword } from './authed-user';
 import { AuthLocalGuard } from './guard/auth-local.guard';
 import { AuthRefreshDto } from './dto/auth-refresh.dto';
+import { AuthJwtGuard } from './guard/auth-jwt.guard';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -34,5 +35,16 @@ export class AuthController {
     const token = await this._service.generateAccessTokenFromRefreshToken(refreshToken);
 
     return { type: 'bearer', access_token: token };
+  }
+
+  @UseGuards(AuthJwtGuard)
+  @Post('/logout')
+  @HttpCode(200)
+  async logout(@Body() { refreshToken }: AuthRefreshDto) {
+    await this._service.revokeRefreshToken(refreshToken);
+
+    return {
+      status: 'ok',
+    };
   }
 }
