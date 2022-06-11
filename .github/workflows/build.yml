@@ -69,9 +69,7 @@ jobs:
 
       - name: Build
         working-directory: app
-        run: |
-          yarn build
-          yarn install --prefer-offline --frozen-lockfile --prod
+        run: yarn build
 
       - name: Set up Docker Buildx
         id: buildx
