@@ -32,3 +32,5 @@ lerna-debug.log*
 
 ormconfig.json
 .env*
+
+node_modules
