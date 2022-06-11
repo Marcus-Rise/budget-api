@@ -33,5 +33,4 @@ lerna-debug.log*
 ormconfig.json
 .env*
 
-dist
 node_modules
