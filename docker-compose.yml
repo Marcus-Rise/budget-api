@@ -1,5 +1,3 @@
-version: "3.9"
-
 networks:
   default:
   internal:
@@ -18,6 +16,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "443:443/udp"
     volumes:
       - caddy_data:/data
       - caddy_config:/config
