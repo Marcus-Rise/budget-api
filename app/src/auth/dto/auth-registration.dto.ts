@@ -1,12 +1,10 @@
-import { IsNotEmpty, MinLength } from 'class-validator';
+import { IsEmail, MinLength } from 'class-validator';
 
 class AuthRegistrationDto {
-  @IsNotEmpty()
-  @MinLength(4)
+  @IsEmail()
   login: string;
 
-  @IsNotEmpty()
-  @MinLength(6)
+  @MinLength(8)
   password: string;
 }
 
