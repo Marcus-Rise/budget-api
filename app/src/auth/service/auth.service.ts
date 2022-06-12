@@ -1,15 +1,14 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { UserService } from '../user/user.service';
-import { AuthRegistrationDto } from './dto/auth-registration.dto';
-import { UserWithoutPassword } from './authed-user';
-import { IAuthJwtPayload } from './auth-jwt-payload.interface';
+import { UserService } from '../../user/user.service';
+import { AuthRegistrationDto } from '../dto/auth-registration.dto';
+import { IAuthJwtPayload, UserWithoutPassword } from '../types';
 import { JwtService } from '@nestjs/jwt';
 import { LessThan, Repository } from 'typeorm';
-import { RefreshToken } from './entities/refresh-token.entity';
+import { RefreshToken } from '../entities/refresh-token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RefreshTokenEntityFactory } from './entities/refresh-token.entity.factory';
+import { RefreshTokenEntityFactory } from '../entities/refresh-token.entity.factory';
 import { ConfigType } from '@nestjs/config';
-import { authConfig } from './config/auth.config';
+import { authConfig } from '../config/auth.config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, NotFoundException, Request, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthJwtGuard } from '../auth/guard/auth-jwt.guard';
-import { IAuthJwtPayload } from '../auth/auth-jwt-payload.interface';
+import { IAuthJwtPayload } from '../auth/types';
 
 @Controller('/api/user')
 export class UserController {

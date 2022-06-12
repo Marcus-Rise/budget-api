@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { UserService } from '../user/user.service';
+import { UserService } from '../../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { RefreshToken } from './entities/refresh-token.entity';
-import { RefreshTokenEntityFactory } from './entities/refresh-token.entity.factory';
+import { RefreshToken } from '../entities/refresh-token.entity';
+import { RefreshTokenEntityFactory } from '../entities/refresh-token.entity.factory';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { authConfig } from './config/auth.config';
-import { UserEntityFactory } from '../user/entities/user.entity.factory';
+import { authConfig } from '../config/auth.config';
+import { UserEntityFactory } from '../../user/entities/user.entity.factory';
 
 const createUser = jest.fn();
 const findByLoginPassword = jest.fn();
