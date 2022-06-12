@@ -1,7 +1,8 @@
 import { Controller, Delete, Get, NotFoundException, Request, UseGuards } from '@nestjs/common';
-import { UserService } from './user.service';
-import { AuthJwtGuard } from '../auth/guard/auth-jwt.guard';
-import { IAuthJwtPayload } from '../auth/auth-jwt-payload.interface';
+import { UserService } from '../service';
+import { AuthJwtGuard } from '../../auth/guard/auth-jwt.guard';
+import { IAuthJwtPayload } from '../../auth/types';
+import { UserGetResponseDtoFactory } from '../dto/user-get-response.dto.factory';
 
 @Controller('/api/user')
 export class UserController {
@@ -16,9 +17,7 @@ export class UserController {
       throw new NotFoundException();
     }
 
-    delete user.password;
-
-    return user;
+    return UserGetResponseDtoFactory.fromUser(user);
   }
 
   @UseGuards(AuthJwtGuard)

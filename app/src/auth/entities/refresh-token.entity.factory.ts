@@ -1,5 +1,5 @@
 import { RefreshToken } from './refresh-token.entity';
-import { UserWithoutPassword } from '../authed-user';
+import { UserWithoutPassword } from '../types';
 
 class RefreshTokenEntityFactory {
   /**

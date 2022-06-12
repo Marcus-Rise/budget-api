@@ -2,11 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { UserController } from './user.controller';
-import { UserService } from './user.service';
-import { AuthJwtStrategy } from '../auth/strategy/auth-jwt.strategy';
+import { UserService } from '../service';
+import { AuthJwtStrategy } from '../../auth/strategy/auth-jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { JwtConfig } from '../auth/config/jwt.config';
+import { JwtConfig } from '../../auth/config/jwt.config';
+import type { User } from '../entities/user.entity';
 
 const findOne = jest.fn();
 const remove = jest.fn();
@@ -56,11 +57,7 @@ describe('UserController (e2e)', () => {
     });
 
     it('should return client user', async () => {
-      const user = {
-        isActive: false,
-        login: 'login',
-        id: 1,
-      };
+      const user: User = { id: 1, login: 'l', password: 'p', isActive: true };
       const jwtService = app.get(JwtService);
       const token = jwtService.sign(user, { secret: jwtConfig.secret });
 
@@ -70,7 +67,7 @@ describe('UserController (e2e)', () => {
         .get(userUrl)
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
-        .expect(user);
+        .expect({ login: 'l' });
     });
   });
 

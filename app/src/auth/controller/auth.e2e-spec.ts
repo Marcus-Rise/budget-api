@@ -2,12 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { AuthLocalStrategy } from './strategy/auth-local.strategy';
-import { JwtConfig } from './config/jwt.config';
+import { AuthService } from '../service';
+import { AuthLocalStrategy } from '../strategy/auth-local.strategy';
+import { JwtConfig } from '../config/jwt.config';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { AuthJwtStrategy } from './strategy/auth-jwt.strategy';
+import { AuthJwtStrategy } from '../strategy/auth-jwt.strategy';
 
 const registerUser = jest.fn();
 const validateUser = jest.fn();
