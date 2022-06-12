@@ -86,7 +86,7 @@ describe('AuthController (e2e)', () => {
     const registerUrl = '/api/auth/register';
 
     it('should accept valid dto', async () => {
-      const dto = { login: 'login', password: 'password' };
+      const dto = { login: 'login@login.com', password: 'password' };
 
       await request(app.getHttpServer())
         .post(registerUrl)
