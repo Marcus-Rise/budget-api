@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { UserController } from './user.controller';
-import { UserService } from './user.service';
-import { AuthJwtStrategy } from '../auth/strategy/auth-jwt.strategy';
+import { UserService } from '../service';
+import { AuthJwtStrategy } from '../../auth/strategy/auth-jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { JwtConfig } from '../auth/config/jwt.config';
+import { JwtConfig } from '../../auth/config/jwt.config';
 
 const findOne = jest.fn();
 const remove = jest.fn();

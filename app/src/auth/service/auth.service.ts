@@ -1,5 +1,5 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service';
 import { AuthRegistrationDto } from '../dto/auth-registration.dto';
 import { IAuthJwtPayload, UserWithoutPassword } from '../types';
 import { JwtService } from '@nestjs/jwt';

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
-import { UserService } from './user.service';
+import { UserService } from '../service';
 import { NotFoundException } from '@nestjs/common';
 
 const findOne = jest.fn();
