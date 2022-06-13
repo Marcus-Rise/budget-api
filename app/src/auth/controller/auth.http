@@ -2,7 +2,7 @@ POST {{url}}/api/auth/register
 Content-Type: application/json
 
 {
-  "login": "login", "password": "password"
+  "login": "user@user.user", "password": "password"
 }
 
 > {%
@@ -17,7 +17,7 @@ POST {{url}}/api/auth/login
 Content-Type: application/json
 
 {
-  "login": "login", "password": "password"
+  "login": "user@user.user", "password": "password"
 }
 
 > {%
