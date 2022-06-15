@@ -62,7 +62,7 @@ docker-compose -f docker-compose.demo.yml up -d
 - Watch `https://localhost` app
 - Watch `https://localhost/adminer` db browser
 
-**Basic auth:**
+**Basic auth:** (https://caddyserver.com/docs/v2-upgrade#basicauth)
 
 - User: user
 - Password: password
