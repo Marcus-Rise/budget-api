@@ -61,3 +61,8 @@ docker-compose -f docker-compose.demo.yml up -d
 
 - Watch `https://localhost` app
 - Watch `https://localhost/adminer` db browser
+
+**Basic auth:**
+
+- User: user
+- Password: password
