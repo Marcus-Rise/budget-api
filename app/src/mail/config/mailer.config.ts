@@ -8,6 +8,7 @@ type MailerConfig = MailerOptions;
 
 const mailerConfigFactory: ConfigFactory<MailerConfig> = () => {
   const port = process.env.MAIL_PORT;
+  const preview = process.env.NODE_ENV === 'development';
 
   return {
     transport: {
@@ -19,6 +20,7 @@ const mailerConfigFactory: ConfigFactory<MailerConfig> = () => {
       },
     },
     defaults: { from: `"Бюджет" <${process.env.MAIL_FROM}>` },
+    preview,
     template: {
       dir: join(__dirname, '../templates'),
       adapter: new PugAdapter(),
