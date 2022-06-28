@@ -8,6 +8,7 @@ import { RefreshTokenEntityFactory } from '../entities/refresh-token.entity.fact
 import { UnprocessableEntityException } from '@nestjs/common';
 import { authConfig } from '../config/auth.config';
 import { UserEntityFactory } from '../../user/entities/user.entity.factory';
+import { MailService } from '../../mail/mail.service';
 
 const createUser = jest.fn();
 const findByLoginPassword = jest.fn();
@@ -17,6 +18,7 @@ const verifyJwt = jest.fn();
 const saveRefreshToken = jest.fn();
 const findRefreshToken = jest.fn();
 const removeRefreshToken = jest.fn();
+const sendEmailConfirmation = jest.fn();
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -39,6 +41,7 @@ describe('AuthService', () => {
         },
         { provide: authConfig.KEY, useValue: {} },
         { provide: JwtService, useValue: { signAsync: generateJwt, verifyAsync: verifyJwt } },
+        { provide: MailService, useValue: { sendEmailConfirmation } },
       ],
     }).compile();
 
@@ -54,6 +57,7 @@ describe('AuthService', () => {
     saveRefreshToken.mockReset();
     findRefreshToken.mockReset();
     removeRefreshToken.mockReset();
+    sendEmailConfirmation.mockReset();
   });
 
   it('should be defined', () => {
@@ -87,14 +91,17 @@ describe('AuthService', () => {
   });
 
   describe('registerUser', () => {
-    it('should create inactive user', async () => {
+    it('should create inactive user and send verification email', async () => {
       createUser.mockImplementationOnce((user) => user);
-      const dto = { login: 'login', password: 'password' };
+      const emailToken = 'token';
+      service.generateEmailToken = jest.fn(async () => emailToken);
 
+      const dto = { login: 'login', password: 'password' };
       const { isActive, login } = await service.registerUser(dto);
 
       expect(login).toEqual(dto.login);
       expect(isActive).toBeFalsy();
+      expect(sendEmailConfirmation).toHaveBeenNthCalledWith(1, login, emailToken);
     });
   });
 

@@ -10,6 +10,7 @@ import { JwtConfig, jwtConfig } from './config/jwt.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { authConfig } from './config/auth.config';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { authConfig } from './config/auth.config';
       useFactory: (config: JwtConfig) => config,
     }),
     ConfigModule.forFeature(authConfig),
+    MailModule,
   ],
   providers: [AuthService, AuthLocalStrategy],
   controllers: [AuthController],
