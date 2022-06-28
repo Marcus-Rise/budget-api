@@ -46,7 +46,12 @@ describe('AuthService', () => {
             remove: removeRefreshToken,
           },
         },
-        { provide: authConfig.KEY, useValue: {} },
+        {
+          provide: authConfig.KEY,
+          useValue: {
+            sessionTTL: '10000000',
+          },
+        },
         { provide: JwtService, useValue: { signAsync: generateJwt, verifyAsync: verifyJwt } },
         { provide: MailService, useValue: { sendEmailConfirmation } },
       ],
@@ -167,7 +172,7 @@ describe('AuthService', () => {
 
       const refreshToken = RefreshTokenEntityFactory.create(
         { id: 1, login: '', isActive: true },
-        10000,
+        '10000',
       );
       findRefreshToken.mockReturnValueOnce(refreshToken);
 
@@ -196,7 +201,7 @@ describe('AuthService', () => {
 
       const refreshToken = RefreshTokenEntityFactory.create(
         { id: 1, login: '', isActive: true },
-        -100,
+        '-100',
       );
       findRefreshToken.mockReturnValueOnce(refreshToken);
 
@@ -212,7 +217,7 @@ describe('AuthService', () => {
 
       const refreshToken = RefreshTokenEntityFactory.create(
         { id: 1, login: '', isActive: true },
-        1000,
+        '1000',
       );
       refreshToken.isRevoked = true;
       findRefreshToken.mockReturnValueOnce(refreshToken);
@@ -229,7 +234,7 @@ describe('AuthService', () => {
 
       const refreshToken = RefreshTokenEntityFactory.create(
         { id: 1, login: '', isActive: true },
-        1000,
+        '1000',
       );
       findRefreshToken.mockReturnValueOnce(refreshToken);
 
@@ -252,7 +257,7 @@ describe('AuthService', () => {
           login: '',
           id: 2,
         },
-        200,
+        '200',
       );
       findRefreshToken.mockReturnValueOnce(refreshToken);
 

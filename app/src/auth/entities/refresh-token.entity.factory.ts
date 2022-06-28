@@ -1,20 +1,17 @@
 import { RefreshToken } from './refresh-token.entity';
 import { UserWithoutPassword } from '../types';
+import { SessionTTL } from '../config/auth.config';
+import ms from 'ms';
 
 class RefreshTokenEntityFactory {
-  /**
-   *
-   * @param user
-   * @param ttl seconds
-   */
-  static create(user: UserWithoutPassword, ttl: number): RefreshToken {
+  static create(user: UserWithoutPassword, ttl: SessionTTL): RefreshToken {
     const refreshToken = new RefreshToken();
 
     refreshToken.userId = user.id;
     refreshToken.isRevoked = false;
 
     const expiration = new Date();
-    expiration.setTime(expiration.getTime() + ttl * 1000);
+    expiration.setTime(expiration.getTime() + ms(ttl));
 
     refreshToken.expires = expiration;
 
