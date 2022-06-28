@@ -6,6 +6,7 @@ const registerUser = jest.fn();
 const generateToken = jest.fn();
 const generateRefreshToken = jest.fn();
 const generateAccessTokenFromRefreshToken = jest.fn();
+const activateUser = jest.fn();
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -20,6 +21,7 @@ describe('AuthController', () => {
             generateToken,
             generateRefreshToken,
             generateAccessTokenFromRefreshToken,
+            activateUser,
           },
         },
       ],
@@ -27,6 +29,14 @@ describe('AuthController', () => {
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
+  });
+
+  afterEach(() => {
+    registerUser.mockReset();
+    generateToken.mockReset();
+    generateRefreshToken.mockReset();
+    generateAccessTokenFromRefreshToken.mockReset();
+    activateUser.mockReset();
   });
 
   it('should be defined', () => {
@@ -40,6 +50,15 @@ describe('AuthController', () => {
 
       expect(res).toMatchObject({ status: 'ok' });
       expect(registerUser).toHaveBeenNthCalledWith(1, dto);
+    });
+  });
+
+  describe('emailConfirm', () => {
+    it('should activate user', async () => {
+      const userId = 1;
+      await controller.emailConfirm({ user: { id: userId, permissions: [], username: '' } });
+
+      expect(activateUser).toHaveBeenNthCalledWith(1, userId);
     });
   });
 

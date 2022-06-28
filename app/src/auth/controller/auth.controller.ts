@@ -1,10 +1,10 @@
-import { Body, Controller, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthRegistrationDto } from '../dto/auth-registration.dto';
 import { AuthService } from '../service';
-import { UserWithoutPassword } from '../types';
+import { AuthJwtPermissions, IAuthJwtPayload, UserWithoutPassword } from '../types';
 import { AuthLocalGuard } from '../guard/auth-local.guard';
 import { AuthRefreshDto } from '../dto/auth-refresh.dto';
-import { AuthJwtGuard } from '../guard/auth-jwt.guard';
+import { Auth } from '../decorators/auth.decorator';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -13,6 +13,16 @@ export class AuthController {
   @Post('/register')
   async register(@Body() dto: AuthRegistrationDto) {
     await this._service.registerUser(dto);
+
+    return {
+      status: 'ok',
+    };
+  }
+
+  @Auth(AuthJwtPermissions.EMAIL)
+  @Get('/email-confirm')
+  async emailConfirm(@Request() req: { user: IAuthJwtPayload }) {
+    await this._service.activateUser(req.user.id);
 
     return {
       status: 'ok',
@@ -37,7 +47,7 @@ export class AuthController {
     return { type: 'bearer', access_token: token };
   }
 
-  @UseGuards(AuthJwtGuard)
+  @Auth(AuthJwtPermissions.USER)
   @Post('/logout')
   @HttpCode(200)
   async logout(@Body() { refreshToken }: AuthRefreshDto) {

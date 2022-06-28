@@ -8,12 +8,14 @@ import { JwtConfig } from '../config/jwt.config';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthJwtStrategy } from '../strategy/auth-jwt.strategy';
+import { AuthJwtPermissions, IAuthJwtPayload } from '../types';
 
 const registerUser = jest.fn();
 const validateUser = jest.fn();
 const generateToken = jest.fn();
 const generateRefreshToken = jest.fn();
 const generateAccessTokenFromRefreshToken = jest.fn();
+const activateUser = jest.fn();
 
 const jwtConfig: JwtConfig = {
   secret: 'secret',
@@ -42,6 +44,7 @@ describe('AuthController (e2e)', () => {
             generateToken,
             generateRefreshToken,
             generateAccessTokenFromRefreshToken,
+            activateUser,
           },
         },
       ],
@@ -107,6 +110,43 @@ describe('AuthController (e2e)', () => {
       const dto = { login: 'll', password: 'pp' };
 
       return request(app.getHttpServer()).post(registerUrl).send(dto).expect(400);
+    });
+  });
+
+  describe('emailConfirm', () => {
+    const registerUrl = '/api/auth/email-confirm';
+
+    it.each([[[AuthJwtPermissions.USER]], [[]]])('should reject permission %s', (permissions) => {
+      const jwtPayload: IAuthJwtPayload = {
+        id: 1,
+        username: 'l',
+        permissions,
+      };
+      const jwtService = app.get(JwtService);
+      const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });
+
+      return request(app.getHttpServer())
+        .get(registerUrl)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(403);
+    });
+
+    it('should activate user', async () => {
+      const userId = 1;
+      const jwtPayload: IAuthJwtPayload = {
+        id: userId,
+        username: 'l',
+        permissions: [AuthJwtPermissions.EMAIL],
+      };
+      const jwtService = app.get(JwtService);
+      const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });
+
+      await request(app.getHttpServer())
+        .get(registerUrl)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      expect(activateUser).toHaveBeenCalledTimes(userId);
     });
   });
 

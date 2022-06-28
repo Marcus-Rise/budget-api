@@ -1,14 +1,14 @@
-import { Controller, Delete, Get, NotFoundException, Request, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, NotFoundException, Request } from '@nestjs/common';
 import { UserService } from '../service';
-import { AuthJwtGuard } from '../../auth/guard/auth-jwt.guard';
-import { IAuthJwtPayload } from '../../auth/types';
+import { AuthJwtPermissions, IAuthJwtPayload } from '../../auth/types';
 import { UserGetResponseDtoFactory } from '../dto/user-get-response.dto.factory';
+import { Auth } from '../../auth/decorators/auth.decorator';
 
 @Controller('/api/user')
 export class UserController {
   constructor(private readonly _userService: UserService) {}
 
-  @UseGuards(AuthJwtGuard)
+  @Auth(AuthJwtPermissions.USER)
   @Get()
   async me(@Request() req: { user: IAuthJwtPayload }) {
     const user = await this._userService.findOne(req.user.id);
@@ -20,7 +20,7 @@ export class UserController {
     return UserGetResponseDtoFactory.fromUser(user);
   }
 
-  @UseGuards(AuthJwtGuard)
+  @Auth(AuthJwtPermissions.USER)
   @Delete()
   async remove(@Request() req: { user: IAuthJwtPayload }) {
     await this._userService.remove(req.user.id);

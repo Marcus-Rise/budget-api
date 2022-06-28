@@ -37,7 +37,7 @@ describe('UserController', () => {
     it('should return user dto', async () => {
       findOne.mockReturnValueOnce(<User>{ password: 'pas', login: 'l', id: 1, isActive: false });
 
-      const user = await controller.me({ user: { id: 1, username: '' } });
+      const user = await controller.me({ user: { id: 1, username: '', permissions: [] } });
 
       expect(user).not.toHaveProperty('password');
       expect(user).not.toHaveProperty('id');
@@ -47,15 +47,15 @@ describe('UserController', () => {
     it('should throw not found exception', async () => {
       findOne.mockReturnValueOnce(null);
 
-      await expect(controller.me({ user: { id: 1, username: '' } })).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        controller.me({ user: { id: 1, username: '', permissions: [] } }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('remove', () => {
     it('should remove user', async () => {
-      await controller.remove({ user: { id: 1, username: '' } });
+      await controller.remove({ user: { id: 1, username: '', permissions: [] } });
 
       expect(remove).toHaveBeenCalledTimes(1);
     });

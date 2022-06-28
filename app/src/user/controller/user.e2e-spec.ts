@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtConfig } from '../../auth/config/jwt.config';
 import type { User } from '../entities/user.entity';
+import { AuthJwtPermissions, IAuthJwtPayload } from '../../auth/types';
 
 const findOne = jest.fn();
 const remove = jest.fn();
@@ -50,16 +51,21 @@ describe('UserController (e2e)', () => {
   });
 
   describe('me', () => {
-    it('should reject unauthorized request', async () => {
+    it('should reject unauthorized request', () => {
       findOne.mockReturnValueOnce({});
 
       return request(app.getHttpServer()).get(userUrl).expect(401);
     });
 
-    it('should return client user', async () => {
+    it('should return client user', () => {
+      const jwtPayload: IAuthJwtPayload = {
+        id: 1,
+        username: 'l',
+        permissions: [AuthJwtPermissions.USER],
+      };
       const user: User = { id: 1, login: 'l', password: 'p', isActive: true };
       const jwtService = app.get(JwtService);
-      const token = jwtService.sign(user, { secret: jwtConfig.secret });
+      const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });
 
       findOne.mockReturnValueOnce(user);
 
@@ -72,20 +78,20 @@ describe('UserController (e2e)', () => {
   });
 
   describe('remove', () => {
-    it('should reject unauthorized request', async () => {
+    it('should reject unauthorized request', () => {
       findOne.mockReturnValueOnce({});
 
       return request(app.getHttpServer()).get(userUrl).expect(401);
     });
 
     it('should delete user', async () => {
-      const user = {
-        isActive: false,
-        login: 'login',
+      const jwtPayload: IAuthJwtPayload = {
         id: 1,
+        username: 'l',
+        permissions: [AuthJwtPermissions.USER],
       };
       const jwtService = app.get(JwtService);
-      const token = jwtService.sign(user, { secret: jwtConfig.secret });
+      const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });
 
       await request(app.getHttpServer())
         .delete(userUrl)

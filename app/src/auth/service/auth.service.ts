@@ -1,7 +1,12 @@
-import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { UserService } from '../../user/service';
 import { AuthRegistrationDto } from '../dto/auth-registration.dto';
-import { IAuthJwtPayload, UserWithoutPassword } from '../types';
+import { AuthJwtPermissions, IAuthJwtPayload, UserWithoutPassword } from '../types';
 import { JwtService } from '@nestjs/jwt';
 import { LessThan, Repository } from 'typeorm';
 import { RefreshToken } from '../entities/refresh-token.entity';
@@ -10,6 +15,7 @@ import { RefreshTokenEntityFactory } from '../entities/refresh-token.entity.fact
 import { ConfigType } from '@nestjs/config';
 import { authConfig } from '../config/auth.config';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { MailService } from '../../mail/mail.service';
 
 @Injectable()
 class AuthService {
@@ -20,6 +26,7 @@ class AuthService {
     private readonly _refreshToken: Repository<RefreshToken>,
     @Inject(authConfig.KEY)
     private readonly _config: ConfigType<typeof authConfig>,
+    private readonly _mail: MailService,
   ) {}
 
   async validateUser(login: string, password: string): Promise<UserWithoutPassword | null> {
@@ -39,14 +46,47 @@ class AuthService {
 
     delete user.password;
 
+    const emailToken = await this.generateEmailToken(user);
+
+    await this._mail.sendEmailConfirmation(user.login, emailToken);
+
     return user;
   }
 
+  async activateUser(userId: number): Promise<UserWithoutPassword> {
+    const user = await this._users.findOne(userId);
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    user.isActive = true;
+
+    return this._users.update(user);
+  }
+
   async generateToken(user: UserWithoutPassword) {
-    const payload: IAuthJwtPayload = { username: user.login, id: user.id };
+    const payload: IAuthJwtPayload = {
+      username: user.login,
+      id: user.id,
+      permissions: [AuthJwtPermissions.USER],
+    };
 
     return this._jwt.signAsync(payload, {
       subject: String(user.id),
+    });
+  }
+
+  async generateEmailToken(user: UserWithoutPassword) {
+    const payload: IAuthJwtPayload = {
+      username: user.login,
+      id: user.id,
+      permissions: [AuthJwtPermissions.EMAIL],
+    };
+
+    return this._jwt.signAsync(payload, {
+      subject: String(user.id),
+      expiresIn: '1d',
     });
   }
 

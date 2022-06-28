@@ -49,6 +49,12 @@ jobs:
           ADMINER_PASSWORD: ${{ secrets.ADMINER_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           SESSION_TTL: ${{ secrets.SESSION_TTL }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_LOGIN: ${{ secrets.MAIL_LOGIN }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_FRONTEND_BASE_URL: ${{ secrets.MAIL_FRONTEND_BASE_URL }}
         run: |
           eval "echo \"$(cat .env.ci)\"" > .env
           docker compose pull
