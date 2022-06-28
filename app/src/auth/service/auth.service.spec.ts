@@ -5,10 +5,11 @@ import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { RefreshToken } from '../entities/refresh-token.entity';
 import { RefreshTokenEntityFactory } from '../entities/refresh-token.entity.factory';
-import { UnprocessableEntityException } from '@nestjs/common';
+import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { authConfig } from '../config/auth.config';
 import { UserEntityFactory } from '../../user/entities/user.entity.factory';
 import { MailService } from '../../mail/mail.service';
+import { User } from '../../user/entities/user.entity';
 
 const createUser = jest.fn();
 const findByLoginPassword = jest.fn();
@@ -19,6 +20,7 @@ const saveRefreshToken = jest.fn();
 const findRefreshToken = jest.fn();
 const removeRefreshToken = jest.fn();
 const sendEmailConfirmation = jest.fn();
+const updateUser = jest.fn();
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -29,7 +31,12 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: UserService,
-          useValue: { create: createUser, findByLoginPassword, findOne: findUserById },
+          useValue: {
+            create: createUser,
+            findByLoginPassword,
+            findOne: findUserById,
+            update: updateUser,
+          },
         },
         {
           provide: getRepositoryToken(RefreshToken),
@@ -58,6 +65,7 @@ describe('AuthService', () => {
     findRefreshToken.mockReset();
     removeRefreshToken.mockReset();
     sendEmailConfirmation.mockReset();
+    updateUser.mockReset();
   });
 
   it('should be defined', () => {
@@ -102,6 +110,23 @@ describe('AuthService', () => {
       expect(login).toEqual(dto.login);
       expect(isActive).toBeFalsy();
       expect(sendEmailConfirmation).toHaveBeenNthCalledWith(1, login, emailToken);
+    });
+  });
+
+  describe('activateUser', () => {
+    it('should activate user', async () => {
+      findUserById.mockReturnValueOnce(<User>{ isActive: false });
+      updateUser.mockImplementationOnce((user) => user);
+
+      const { isActive } = await service.activateUser(1);
+
+      expect(isActive).toBeTruthy();
+    });
+
+    it('should throw error if user is not exists', async () => {
+      findUserById.mockReturnValueOnce(undefined);
+
+      await expect(service.activateUser(1)).rejects.toThrow(NotFoundException);
     });
   });
 

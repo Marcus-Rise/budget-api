@@ -1,4 +1,9 @@
-import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { UserService } from '../../user/service';
 import { AuthRegistrationDto } from '../dto/auth-registration.dto';
 import { AuthJwtPermissions, IAuthJwtPayload, UserWithoutPassword } from '../types';
@@ -46,6 +51,18 @@ class AuthService {
     await this._mail.sendEmailConfirmation(user.login, emailToken);
 
     return user;
+  }
+
+  async activateUser(userId: number): Promise<UserWithoutPassword> {
+    const user = await this._users.findOne(userId);
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    user.isActive = true;
+
+    return this._users.update(user);
   }
 
   async generateToken(user: UserWithoutPassword) {

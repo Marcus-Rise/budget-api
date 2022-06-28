@@ -56,4 +56,8 @@ export class UserService {
   remove(id: number) {
     return this._repo.delete(id);
   }
+
+  update(user: User) {
+    return this._repo.save(user);
+  }
 }
