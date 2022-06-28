@@ -50,7 +50,7 @@ describe('MailService', () => {
       subject: 'Добро пожаловать в Бюджет! Подтвердите email',
       template: './email-confirmation',
       context: {
-        url: `http://localhost/auth/email-confirm?token=${token}`,
+        url: `http://localhost/api/auth/email-confirm?token=${token}`,
       },
     });
   });
