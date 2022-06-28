@@ -1,10 +1,10 @@
 import { Body, Controller, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthRegistrationDto } from '../dto/auth-registration.dto';
 import { AuthService } from '../service';
-import { UserWithoutPassword } from '../types';
+import { AuthJwtPermissions, UserWithoutPassword } from '../types';
 import { AuthLocalGuard } from '../guard/auth-local.guard';
 import { AuthRefreshDto } from '../dto/auth-refresh.dto';
-import { AuthJwtGuard } from '../guard/auth-jwt.guard';
+import { Auth } from '../decorators/auth.decorator';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -37,7 +37,7 @@ export class AuthController {
     return { type: 'bearer', access_token: token };
   }
 
-  @UseGuards(AuthJwtGuard)
+  @Auth(AuthJwtPermissions.USER)
   @Post('/logout')
   @HttpCode(200)
   async logout(@Body() { refreshToken }: AuthRefreshDto) {

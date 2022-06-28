@@ -1,7 +1,7 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { UserService } from '../../user/service';
 import { AuthRegistrationDto } from '../dto/auth-registration.dto';
-import { IAuthJwtPayload, UserWithoutPassword } from '../types';
+import { AuthJwtPermissions, IAuthJwtPayload, UserWithoutPassword } from '../types';
 import { JwtService } from '@nestjs/jwt';
 import { LessThan, Repository } from 'typeorm';
 import { RefreshToken } from '../entities/refresh-token.entity';
@@ -43,7 +43,11 @@ class AuthService {
   }
 
   async generateToken(user: UserWithoutPassword) {
-    const payload: IAuthJwtPayload = { username: user.login, id: user.id };
+    const payload: IAuthJwtPayload = {
+      username: user.login,
+      id: user.id,
+      permissions: [AuthJwtPermissions.USER],
+    };
 
     return this._jwt.signAsync(payload, {
       subject: String(user.id),
