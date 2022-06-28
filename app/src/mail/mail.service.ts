@@ -12,7 +12,7 @@ class MailService {
   ) {}
 
   async sendEmailConfirmation(userEmail: string, token: string) {
-    const url = new URL('/auth/email-confirm', this._config.frontendBaseUrl);
+    const url = new URL('/api/auth/email-confirm', this._config.frontendBaseUrl);
     url.searchParams.set('token', token);
 
     return this._mailerService.sendMail({
