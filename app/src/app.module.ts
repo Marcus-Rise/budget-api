@@ -7,8 +7,6 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseConfig, databaseConfig } from './config/database.config';
 import { AuthModule } from './auth/auth.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { APP_GUARD } from '@nestjs/core';
-import { PermissionGuard } from './auth/guard/permission-guard.service';
 
 @Module({
   imports: [
@@ -25,6 +23,6 @@ import { PermissionGuard } from './auth/guard/permission-guard.service';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [{ provide: APP_GUARD, useClass: PermissionGuard }, AppService],
+  providers: [AppService],
 })
 export class AppModule {}
