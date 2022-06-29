@@ -17,11 +17,11 @@ class AuthJwtRoleGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<{ user: IAuthJwtPayload }>();
     const user = request.user;
 
-    return this.matchRoles(roles, user.roles);
+    return this.matchRoles(roles, user.role);
   }
 
-  matchRoles(requiredRoles: AuthJwtRole[], existingRoles: AuthJwtRole[]): boolean {
-    return requiredRoles.every((roles) => existingRoles.includes(roles));
+  matchRoles(requiredRoles: AuthJwtRole[], role: AuthJwtRole): boolean {
+    return requiredRoles.some((requiredRole) => role === requiredRole);
   }
 }
 

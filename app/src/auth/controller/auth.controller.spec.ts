@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from '../service';
+import { AuthJwtRole } from '../types';
 
 const registerUser = jest.fn();
 const generateToken = jest.fn();
@@ -59,7 +60,7 @@ describe('AuthController', () => {
   describe('emailConfirm', () => {
     it('should activate user', async () => {
       const userId = 1;
-      await controller.emailConfirm({ user: { id: userId, roles: [], username: '' } });
+      await controller.emailConfirm({ user: { id: userId, role: AuthJwtRole.USER, username: '' } });
 
       expect(activateUser).toHaveBeenNthCalledWith(1, userId);
     });

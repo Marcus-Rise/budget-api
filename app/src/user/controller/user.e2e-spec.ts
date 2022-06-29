@@ -61,7 +61,7 @@ describe('UserController (e2e)', () => {
       const jwtPayload: IAuthJwtPayload = {
         id: 1,
         username: 'l',
-        roles: [AuthJwtRole.USER],
+        role: AuthJwtRole.USER,
       };
       const user: User = { id: 1, login: 'l', password: 'p', isActive: true };
       const jwtService = app.get(JwtService);
@@ -88,7 +88,7 @@ describe('UserController (e2e)', () => {
       const jwtPayload: IAuthJwtPayload = {
         id: 1,
         username: 'l',
-        roles: [AuthJwtRole.USER],
+        role: AuthJwtRole.USER,
       };
       const jwtService = app.get(JwtService);
       const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });

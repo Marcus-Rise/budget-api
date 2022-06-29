@@ -152,11 +152,11 @@ describe('AuthController (e2e)', () => {
   describe('emailConfirm', () => {
     const registerUrl = '/api/auth/email-confirm';
 
-    it.each([[[AuthJwtRole.USER]], [[]]])('should reject role %s', (roles) => {
+    it.each([AuthJwtRole.USER])('should reject role %i', (role) => {
       const jwtPayload: IAuthJwtPayload = {
         id: 1,
         username: 'l',
-        roles,
+        role,
       };
       const jwtService = app.get(JwtService);
       const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });
@@ -172,7 +172,7 @@ describe('AuthController (e2e)', () => {
       const jwtPayload: IAuthJwtPayload = {
         id: userId,
         username: 'l',
-        roles: [AuthJwtRole.EMAIL],
+        role: AuthJwtRole.EMAIL,
       };
       const jwtService = app.get(JwtService);
       const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });

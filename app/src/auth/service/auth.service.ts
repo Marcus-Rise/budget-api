@@ -80,7 +80,7 @@ class AuthService {
     const payload: IAuthJwtPayload = {
       username: user.login,
       id: user.id,
-      roles: [AuthJwtRole.USER],
+      role: AuthJwtRole.USER,
     };
 
     return this._jwt.signAsync(payload, {
@@ -92,7 +92,7 @@ class AuthService {
     const payload: IAuthJwtPayload = {
       username: user.login,
       id: user.id,
-      roles: [AuthJwtRole.EMAIL],
+      role: AuthJwtRole.EMAIL,
     };
 
     return this._jwt.signAsync(payload, {

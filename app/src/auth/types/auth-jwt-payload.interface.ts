@@ -6,7 +6,7 @@ enum AuthJwtRole {
 interface IAuthJwtPayload {
   id: number;
   username: string;
-  roles: AuthJwtRole[];
+  role: AuthJwtRole;
 }
 
 export type { IAuthJwtPayload };
