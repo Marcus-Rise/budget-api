@@ -1,14 +1,14 @@
-import { AuthJwtPermissions } from '../types';
+import { AuthJwtRole } from '../types';
 import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
 import { AuthJwtGuard } from '../guard/auth-jwt.guard';
-import { AuthJwtPermissionGuard } from '../guard/auth-jwt-permission.guard';
+import { AuthJwtRoleGuard } from '../guard/auth-jwt-role.guard';
 
-const JWT_PERMISSION_METADATA_KEY = 'permissions';
+const JWT_ROLE_METADATA_KEY = 'roles';
 
-const Auth = (...permissions: AuthJwtPermissions[]) =>
+const Auth = (...roles: AuthJwtRole[]) =>
   applyDecorators(
-    SetMetadata(JWT_PERMISSION_METADATA_KEY, permissions),
-    UseGuards(AuthJwtGuard, AuthJwtPermissionGuard),
+    SetMetadata(JWT_ROLE_METADATA_KEY, roles),
+    UseGuards(AuthJwtGuard, AuthJwtRoleGuard),
   );
 
-export { Auth, JWT_PERMISSION_METADATA_KEY };
+export { Auth, JWT_ROLE_METADATA_KEY };

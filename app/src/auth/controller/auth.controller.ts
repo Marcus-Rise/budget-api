@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthRegistrationDto } from '../dto/auth-registration.dto';
 import { AuthService } from '../service';
-import { AuthJwtPermissions, IAuthJwtPayload, UserWithoutPassword } from '../types';
+import { AuthJwtRole, IAuthJwtPayload, UserWithoutPassword } from '../types';
 import { AuthLocalGuard } from '../guard/auth-local.guard';
 import { AuthRefreshDto } from '../dto/auth-refresh.dto';
 import { Auth } from '../decorators/auth.decorator';
@@ -30,7 +30,7 @@ export class AuthController {
     };
   }
 
-  @Auth(AuthJwtPermissions.EMAIL)
+  @Auth(AuthJwtRole.EMAIL)
   @Get('/email-confirm')
   async emailConfirm(@Request() req: { user: IAuthJwtPayload }) {
     await this._service.activateUser(req.user.id);
@@ -58,7 +58,7 @@ export class AuthController {
     return { type: 'bearer', access_token: token };
   }
 
-  @Auth(AuthJwtPermissions.USER)
+  @Auth(AuthJwtRole.USER)
   @Post('/logout')
   @HttpCode(200)
   async logout(@Body() { refreshToken }: AuthRefreshDto) {

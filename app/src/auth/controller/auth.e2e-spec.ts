@@ -8,7 +8,7 @@ import { JwtConfig } from '../config/jwt.config';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthJwtStrategy } from '../strategy/auth-jwt.strategy';
-import { AuthJwtPermissions, IAuthJwtPayload } from '../types';
+import { AuthJwtRole, IAuthJwtPayload } from '../types';
 
 const registerUser = jest.fn();
 const validateUser = jest.fn();
@@ -152,11 +152,11 @@ describe('AuthController (e2e)', () => {
   describe('emailConfirm', () => {
     const registerUrl = '/api/auth/email-confirm';
 
-    it.each([[[AuthJwtPermissions.USER]], [[]]])('should reject permission %s', (permissions) => {
+    it.each([[[AuthJwtRole.USER]], [[]]])('should reject role %s', (roles) => {
       const jwtPayload: IAuthJwtPayload = {
         id: 1,
         username: 'l',
-        permissions,
+        roles,
       };
       const jwtService = app.get(JwtService);
       const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });
@@ -172,7 +172,7 @@ describe('AuthController (e2e)', () => {
       const jwtPayload: IAuthJwtPayload = {
         id: userId,
         username: 'l',
-        permissions: [AuthJwtPermissions.EMAIL],
+        roles: [AuthJwtRole.EMAIL],
       };
       const jwtService = app.get(JwtService);
       const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });

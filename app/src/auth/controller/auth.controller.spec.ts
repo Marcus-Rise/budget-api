@@ -59,7 +59,7 @@ describe('AuthController', () => {
   describe('emailConfirm', () => {
     it('should activate user', async () => {
       const userId = 1;
-      await controller.emailConfirm({ user: { id: userId, permissions: [], username: '' } });
+      await controller.emailConfirm({ user: { id: userId, roles: [], username: '' } });
 
       expect(activateUser).toHaveBeenNthCalledWith(1, userId);
     });

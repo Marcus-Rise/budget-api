@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, NotFoundException, Request } from '@nestjs/common';
 import { UserService } from '../service';
-import { AuthJwtPermissions, IAuthJwtPayload } from '../../auth/types';
+import { AuthJwtRole, IAuthJwtPayload } from '../../auth/types';
 import { UserGetResponseDtoFactory } from '../dto/user-get-response.dto.factory';
 import { Auth } from '../../auth/decorators/auth.decorator';
 
@@ -8,7 +8,7 @@ import { Auth } from '../../auth/decorators/auth.decorator';
 export class UserController {
   constructor(private readonly _userService: UserService) {}
 
-  @Auth(AuthJwtPermissions.USER)
+  @Auth(AuthJwtRole.USER)
   @Get()
   async me(@Request() req: { user: IAuthJwtPayload }) {
     const user = await this._userService.findOne(req.user.id);
@@ -20,7 +20,7 @@ export class UserController {
     return UserGetResponseDtoFactory.fromUser(user);
   }
 
-  @Auth(AuthJwtPermissions.USER)
+  @Auth(AuthJwtRole.USER)
   @Delete()
   async remove(@Request() req: { user: IAuthJwtPayload }) {
     await this._userService.remove(req.user.id);

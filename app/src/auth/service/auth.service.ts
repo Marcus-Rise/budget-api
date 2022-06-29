@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from '../../user/service';
 import { AuthRegistrationDto } from '../dto/auth-registration.dto';
-import { AuthJwtPermissions, IAuthJwtPayload, UserWithoutPassword } from '../types';
+import { AuthJwtRole, IAuthJwtPayload, UserWithoutPassword } from '../types';
 import { JwtService } from '@nestjs/jwt';
 import { LessThan, Repository } from 'typeorm';
 import { RefreshToken } from '../entities/refresh-token.entity';
@@ -80,7 +80,7 @@ class AuthService {
     const payload: IAuthJwtPayload = {
       username: user.login,
       id: user.id,
-      permissions: [AuthJwtPermissions.USER],
+      roles: [AuthJwtRole.USER],
     };
 
     return this._jwt.signAsync(payload, {
@@ -92,7 +92,7 @@ class AuthService {
     const payload: IAuthJwtPayload = {
       username: user.login,
       id: user.id,
-      permissions: [AuthJwtPermissions.EMAIL],
+      roles: [AuthJwtRole.EMAIL],
     };
 
     return this._jwt.signAsync(payload, {
