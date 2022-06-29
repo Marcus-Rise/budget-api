@@ -16,6 +16,7 @@ const generateToken = jest.fn();
 const generateRefreshToken = jest.fn();
 const generateAccessTokenFromRefreshToken = jest.fn();
 const activateUser = jest.fn();
+const resetPassword = jest.fn();
 
 const jwtConfig: JwtConfig = {
   secret: 'secret',
@@ -45,6 +46,7 @@ describe('AuthController (e2e)', () => {
             generateRefreshToken,
             generateAccessTokenFromRefreshToken,
             activateUser,
+            resetPassword,
           },
         },
       ],
@@ -56,6 +58,16 @@ describe('AuthController (e2e)', () => {
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
     await app.init();
+  });
+
+  afterEach(() => {
+    registerUser.mockReset();
+    validateUser.mockReset();
+    generateToken.mockReset();
+    generateRefreshToken.mockReset();
+    generateAccessTokenFromRefreshToken.mockReset();
+    activateUser.mockReset();
+    resetPassword.mockReset();
   });
 
   describe('login', () => {
@@ -110,6 +122,30 @@ describe('AuthController (e2e)', () => {
       const dto = { login: 'll', password: 'pp' };
 
       return request(app.getHttpServer()).post(registerUrl).send(dto).expect(400);
+    });
+  });
+
+  describe('resetPassword', () => {
+    const url = '/api/auth/reset-password';
+
+    it('should accept valid dto', async () => {
+      const dto = { login: 'login@login.com' };
+
+      await request(app.getHttpServer()).post(url).send(dto).expect(200).expect({ status: 'ok' });
+
+      expect(resetPassword).toHaveBeenNthCalledWith(1, dto);
+    });
+
+    it('should return 400 on empty dto', () => {
+      const dto = { login: '' };
+
+      return request(app.getHttpServer()).post(url).send(dto).expect(400);
+    });
+
+    it('should return 400 on wrong dto', () => {
+      const dto = { login: 'll' };
+
+      return request(app.getHttpServer()).post(url).send(dto).expect(400);
     });
   });
 
