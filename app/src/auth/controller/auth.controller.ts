@@ -5,6 +5,7 @@ import { AuthJwtPermissions, IAuthJwtPayload, UserWithoutPassword } from '../typ
 import { AuthLocalGuard } from '../guard/auth-local.guard';
 import { AuthRefreshDto } from '../dto/auth-refresh.dto';
 import { Auth } from '../decorators/auth.decorator';
+import { AuthResetPasswordDto } from '../dto/auth-reset-password.dto';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -13,6 +14,16 @@ export class AuthController {
   @Post('/register')
   async register(@Body() dto: AuthRegistrationDto) {
     await this._service.registerUser(dto);
+
+    return {
+      status: 'ok',
+    };
+  }
+
+  @Post('/reset-password')
+  @HttpCode(200)
+  async resetPassword(@Body() dto: AuthResetPasswordDto) {
+    await this._service.resetPassword(dto);
 
     return {
       status: 'ok',

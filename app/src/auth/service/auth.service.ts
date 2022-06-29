@@ -16,6 +16,7 @@ import { ConfigType } from '@nestjs/config';
 import { authConfig } from '../config/auth.config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MailService } from '../../mail/mail.service';
+import { AuthResetPasswordDto } from '../dto/auth-reset-password.dto';
 
 @Injectable()
 class AuthService {
@@ -51,6 +52,16 @@ class AuthService {
     await this._mail.sendEmailConfirmation(user.login, emailToken);
 
     return user;
+  }
+
+  async resetPassword(dto: AuthResetPasswordDto) {
+    const user = await this._users.findByLogin(dto.login);
+
+    if (user) {
+      const emailToken = await this.generateEmailToken(user);
+
+      await this._mail.sendResetPassword(user.login, emailToken);
+    }
   }
 
   async activateUser(userId: number): Promise<UserWithoutPassword> {
@@ -91,9 +102,6 @@ class AuthService {
   }
 
   async generateRefreshToken(user: UserWithoutPassword) {
-    /**
-     * seconds
-     */
     const expiresIn = this._config.sessionTTL;
 
     const refreshToken = await this._refreshToken.save(

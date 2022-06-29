@@ -39,7 +39,7 @@ describe('MailService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should send mail', async () => {
+  it('should send email confirmation', async () => {
     const userEmail = 'email';
     const token = 'token';
 
@@ -51,6 +51,22 @@ describe('MailService', () => {
       template: './email-confirmation',
       context: {
         url: `http://localhost/api/auth/email-confirm?token=${token}&type=bearer`,
+      },
+    });
+  });
+
+  it('should send reset password', async () => {
+    const userEmail = 'email';
+    const token = 'token';
+
+    await service.sendResetPassword(userEmail, token);
+
+    expect(sendMail).toHaveBeenNthCalledWith(1, {
+      to: userEmail,
+      subject: 'Сброс пароля в приложении Бюджет',
+      template: './reset-password',
+      context: {
+        url: `http://localhost/api/auth/reset-password?token=${token}&type=bearer`,
       },
     });
   });

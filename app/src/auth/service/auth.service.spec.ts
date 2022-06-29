@@ -21,6 +21,8 @@ const findRefreshToken = jest.fn();
 const removeRefreshToken = jest.fn();
 const sendEmailConfirmation = jest.fn();
 const updateUser = jest.fn();
+const findByLogin = jest.fn();
+const sendResetPassword = jest.fn();
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -36,6 +38,7 @@ describe('AuthService', () => {
             findByLoginPassword,
             findOne: findUserById,
             update: updateUser,
+            findByLogin,
           },
         },
         {
@@ -53,7 +56,7 @@ describe('AuthService', () => {
           },
         },
         { provide: JwtService, useValue: { signAsync: generateJwt, verifyAsync: verifyJwt } },
-        { provide: MailService, useValue: { sendEmailConfirmation } },
+        { provide: MailService, useValue: { sendEmailConfirmation, sendResetPassword } },
       ],
     }).compile();
 
@@ -71,6 +74,8 @@ describe('AuthService', () => {
     removeRefreshToken.mockReset();
     sendEmailConfirmation.mockReset();
     updateUser.mockReset();
+    findByLogin.mockReset();
+    sendResetPassword.mockReset();
   });
 
   it('should be defined', () => {
@@ -132,6 +137,27 @@ describe('AuthService', () => {
       findUserById.mockReturnValueOnce(undefined);
 
       await expect(service.activateUser(1)).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('should ignore not existing user', async () => {
+      findByLogin.mockReturnValueOnce(undefined);
+      await service.resetPassword({ login: '' });
+
+      expect(sendResetPassword).toHaveBeenCalledTimes(0);
+    });
+
+    it('should send reset password email if user exists', async () => {
+      const user: User = { isActive: true, password: 'p', id: 1, login: 'l' };
+      findByLogin.mockReturnValueOnce(user);
+
+      const token = 'token';
+      service.generateEmailToken = jest.fn(async () => token);
+      await service.resetPassword({ login: user.login });
+
+      expect(service.generateEmailToken).toHaveBeenNthCalledWith(1, user);
+      expect(sendResetPassword).toHaveBeenNthCalledWith(1, user.login, token);
     });
   });
 

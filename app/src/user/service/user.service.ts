@@ -53,6 +53,12 @@ export class UserService {
     });
   }
 
+  findByLogin(login: string) {
+    return this._repo.findOne({
+      login,
+    });
+  }
+
   remove(id: number) {
     return this._repo.delete(id);
   }
