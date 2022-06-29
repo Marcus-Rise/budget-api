@@ -44,7 +44,7 @@ export class AuthController {
   @Post('/login')
   @HttpCode(200)
   async login(@Request() req: { user: UserWithoutPassword }) {
-    const token = await this._service.generateToken(req.user);
+    const token = await this._service.generateToken(req.user, AuthJwtRole.USER);
     const refreshToken = await this._service.generateRefreshToken(req.user);
 
     return { type: 'bearer', access_token: token, refresh_token: refreshToken };

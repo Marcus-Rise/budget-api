@@ -10,6 +10,7 @@ import { authConfig } from '../config/auth.config';
 import { UserEntityFactory } from '../../user/entities/user.entity.factory';
 import { MailService } from '../../mail/mail.service';
 import { User } from '../../user/entities/user.entity';
+import { AuthJwtRole } from '../types';
 
 const createUser = jest.fn();
 const findByLoginPassword = jest.fn();
@@ -112,7 +113,7 @@ describe('AuthService', () => {
     it('should create inactive user and send verification email', async () => {
       createUser.mockImplementationOnce((user) => user);
       const emailToken = 'token';
-      service.generateEmailToken = jest.fn(async () => emailToken);
+      service.generateToken = jest.fn(async () => emailToken);
 
       const dto = { login: 'login', password: 'password' };
       const { isActive, login } = await service.registerUser(dto);
@@ -153,10 +154,10 @@ describe('AuthService', () => {
       findByLogin.mockReturnValueOnce(user);
 
       const token = 'token';
-      service.generateEmailToken = jest.fn(async () => token);
+      service.generateToken = jest.fn(async () => token);
       await service.resetPassword({ login: user.login });
 
-      expect(service.generateEmailToken).toHaveBeenNthCalledWith(1, user);
+      expect(service.generateToken).toHaveBeenNthCalledWith(1, user, AuthJwtRole.EMAIL, '10m');
       expect(sendResetPassword).toHaveBeenNthCalledWith(1, user.login, token);
     });
   });
@@ -166,7 +167,10 @@ describe('AuthService', () => {
       const token = 'token';
       generateJwt.mockReturnValueOnce(token);
 
-      const accessToken = await service.generateToken({ isActive: false, login: 'l', id: 1 });
+      const accessToken = await service.generateToken(
+        { isActive: false, login: 'l', id: 1 },
+        AuthJwtRole.USER,
+      );
 
       expect(accessToken).toEqual(token);
     });
@@ -209,7 +213,7 @@ describe('AuthService', () => {
 
       await service.generateAccessTokenFromRefreshToken('');
 
-      expect(service.generateToken).toHaveBeenNthCalledWith(1, user);
+      expect(service.generateToken).toHaveBeenNthCalledWith(1, user, AuthJwtRole.USER);
     });
 
     it('should throw error if token is not exists', async () => {

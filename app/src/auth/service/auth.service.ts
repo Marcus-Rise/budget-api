@@ -13,7 +13,7 @@ import { RefreshToken } from '../entities/refresh-token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshTokenEntityFactory } from '../entities/refresh-token.entity.factory';
 import { ConfigType } from '@nestjs/config';
-import { authConfig } from '../config/auth.config';
+import { authConfig, SessionTTL } from '../config/auth.config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MailService } from '../../mail/mail.service';
 import { AuthResetPasswordDto } from '../dto/auth-reset-password.dto';
@@ -47,7 +47,7 @@ class AuthService {
 
     delete user.password;
 
-    const emailToken = await this.generateEmailToken(user);
+    const emailToken = await this.generateToken(user, AuthJwtRole.EMAIL, '1d');
 
     await this._mail.sendEmailConfirmation(user.login, emailToken);
 
@@ -58,7 +58,7 @@ class AuthService {
     const user = await this._users.findByLogin(dto.login);
 
     if (user) {
-      const emailToken = await this.generateEmailToken(user);
+      const emailToken = await this.generateToken(user, AuthJwtRole.EMAIL, '10m');
 
       await this._mail.sendResetPassword(user.login, emailToken);
     }
@@ -76,28 +76,16 @@ class AuthService {
     return this._users.update(user);
   }
 
-  async generateToken(user: UserWithoutPassword) {
+  async generateToken(user: UserWithoutPassword, role: AuthJwtRole, expiresIn?: SessionTTL) {
     const payload: IAuthJwtPayload = {
       username: user.login,
       id: user.id,
-      role: AuthJwtRole.USER,
+      role,
     };
 
     return this._jwt.signAsync(payload, {
       subject: String(user.id),
-    });
-  }
-
-  async generateEmailToken(user: UserWithoutPassword) {
-    const payload: IAuthJwtPayload = {
-      username: user.login,
-      id: user.id,
-      role: AuthJwtRole.EMAIL,
-    };
-
-    return this._jwt.signAsync(payload, {
-      subject: String(user.id),
-      expiresIn: '1d',
+      expiresIn,
     });
   }
 
@@ -149,7 +137,7 @@ class AuthService {
       throw new UnprocessableEntityException('Refresh token malformed');
     }
 
-    return this.generateToken(user);
+    return this.generateToken(user, AuthJwtRole.USER);
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM, {
