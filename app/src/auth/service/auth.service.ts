@@ -86,7 +86,7 @@ class AuthService {
 
     return this._jwt.signAsync(payload, {
       subject: String(user.id),
-      expiresIn,
+      expiresIn: expiresIn ?? '60s',
     });
   }
 
