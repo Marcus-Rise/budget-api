@@ -9,6 +9,7 @@ const generateRefreshToken = jest.fn();
 const generateAccessTokenFromRefreshToken = jest.fn();
 const activateUser = jest.fn();
 const resetPassword = jest.fn();
+const changeUserPassword = jest.fn();
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -25,6 +26,7 @@ describe('AuthController', () => {
             generateAccessTokenFromRefreshToken,
             activateUser,
             resetPassword,
+            changeUserPassword,
           },
         },
       ],
@@ -41,6 +43,7 @@ describe('AuthController', () => {
     generateAccessTokenFromRefreshToken.mockReset();
     activateUser.mockReset();
     resetPassword.mockReset();
+    changeUserPassword.mockReset();
   });
 
   it('should be defined', () => {
@@ -72,6 +75,19 @@ describe('AuthController', () => {
       await controller.resetPassword(dto);
 
       expect(resetPassword).toHaveBeenNthCalledWith(1, dto);
+    });
+  });
+
+  describe('changePassword', () => {
+    it('should change password', async () => {
+      const dto = { password: 'l' };
+      const userId = 1;
+      await controller.changePassword(
+        { user: { id: userId, role: AuthJwtRole.USER, username: '' } },
+        dto,
+      );
+
+      expect(changeUserPassword).toHaveBeenNthCalledWith(1, userId, dto);
     });
   });
 

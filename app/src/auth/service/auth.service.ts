@@ -17,6 +17,7 @@ import { authConfig, SessionTTL } from '../config/auth.config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MailService } from '../../mail/mail.service';
 import { AuthResetPasswordDto } from '../dto/auth-reset-password.dto';
+import { AuthChangePasswordDto } from '../dto/auth-change-password.dto';
 
 @Injectable()
 class AuthService {
@@ -168,6 +169,18 @@ class AuthService {
     token.isRevoked = true;
 
     return this._refreshToken.save(token);
+  }
+
+  async changeUserPassword(userId: number, dto: AuthChangePasswordDto) {
+    const user = await this._users.findOne(userId);
+
+    if (!user) {
+      throw new NotFoundException("user didn't found");
+    }
+
+    user.password = await this._users.hashPassword(dto.password);
+
+    return this._users.update(user);
   }
 }
 

@@ -24,6 +24,7 @@ const sendEmailConfirmation = jest.fn();
 const updateUser = jest.fn();
 const findByLogin = jest.fn();
 const sendResetPassword = jest.fn();
+const hashPassword = jest.fn();
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -40,6 +41,7 @@ describe('AuthService', () => {
             findOne: findUserById,
             update: updateUser,
             findByLogin,
+            hashPassword,
           },
         },
         {
@@ -77,6 +79,7 @@ describe('AuthService', () => {
     updateUser.mockReset();
     findByLogin.mockReset();
     sendResetPassword.mockReset();
+    hashPassword.mockReset();
   });
 
   it('should be defined', () => {
@@ -301,6 +304,28 @@ describe('AuthService', () => {
       findRefreshToken.mockReturnValueOnce(undefined);
 
       await expect(service.revokeRefreshToken('')).rejects.toThrow(UnprocessableEntityException);
+    });
+  });
+
+  describe('changeUserPassword', () => {
+    it('should change password with hashed str', async () => {
+      const hashedPassword = 'hashed password';
+
+      findUserById.mockReturnValueOnce({});
+      updateUser.mockImplementationOnce((user) => user);
+      hashPassword.mockReturnValueOnce(hashedPassword);
+
+      const user = await service.changeUserPassword(1, { password: 'password' });
+
+      expect(user).toMatchObject({ password: hashedPassword });
+    });
+
+    it('should throw error if user is not exists', async () => {
+      findUserById.mockReturnValueOnce(undefined);
+
+      await expect(service.changeUserPassword(1, { password: 'password' })).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

@@ -6,6 +6,7 @@ import { AuthLocalGuard } from '../guard/auth-local.guard';
 import { AuthRefreshDto } from '../dto/auth-refresh.dto';
 import { Auth } from '../decorators/auth.decorator';
 import { AuthResetPasswordDto } from '../dto/auth-reset-password.dto';
+import { AuthChangePasswordDto } from '../dto/auth-change-password.dto';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -34,6 +35,20 @@ export class AuthController {
   @Get('/email-confirm')
   async emailConfirm(@Request() req: { user: IAuthJwtPayload }) {
     await this._service.activateUser(req.user.id);
+
+    return {
+      status: 'ok',
+    };
+  }
+
+  @Auth(AuthJwtRole.USER, AuthJwtRole.EMAIL)
+  @Post('/change-password')
+  @HttpCode(200)
+  async changePassword(
+    @Request() req: { user: IAuthJwtPayload },
+    @Body() dto: AuthChangePasswordDto,
+  ) {
+    await this._service.changeUserPassword(req.user.id, dto);
 
     return {
       status: 'ok',

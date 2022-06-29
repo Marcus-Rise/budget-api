@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthJwtStrategy } from '../strategy/auth-jwt.strategy';
 import { AuthJwtRole, IAuthJwtPayload } from '../types';
+import { AuthChangePasswordDto } from '../dto/auth-change-password.dto';
 
 const registerUser = jest.fn();
 const validateUser = jest.fn();
@@ -17,6 +18,7 @@ const generateRefreshToken = jest.fn();
 const generateAccessTokenFromRefreshToken = jest.fn();
 const activateUser = jest.fn();
 const resetPassword = jest.fn();
+const changeUserPassword = jest.fn();
 
 const jwtConfig: JwtConfig = {
   secret: 'secret',
@@ -47,6 +49,7 @@ describe('AuthController (e2e)', () => {
             generateAccessTokenFromRefreshToken,
             activateUser,
             resetPassword,
+            changeUserPassword,
           },
         },
       ],
@@ -68,6 +71,7 @@ describe('AuthController (e2e)', () => {
     generateAccessTokenFromRefreshToken.mockReset();
     activateUser.mockReset();
     resetPassword.mockReset();
+    changeUserPassword.mockReset();
   });
 
   describe('login', () => {
@@ -146,6 +150,49 @@ describe('AuthController (e2e)', () => {
       const dto = { login: 'll' };
 
       return request(app.getHttpServer()).post(url).send(dto).expect(400);
+    });
+  });
+
+  describe('changePassword', () => {
+    const url = '/api/auth/change-password';
+
+    it.each([AuthJwtRole.USER, AuthJwtRole.EMAIL])(
+      'should accept valid dto with role %i',
+      async (role) => {
+        const dto: AuthChangePasswordDto = { password: 'password' };
+
+        const jwtPayload: IAuthJwtPayload = {
+          id: 1,
+          username: 'l',
+          role,
+        };
+        const jwtService = app.get(JwtService);
+        const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });
+
+        return request(app.getHttpServer())
+          .post(url)
+          .send(dto)
+          .set('Authorization', `Bearer ${token}`)
+          .expect(200);
+      },
+    );
+
+    it('should return 400 on empty dto', () => {
+      const dto: AuthChangePasswordDto = { password: '' };
+
+      const jwtPayload: IAuthJwtPayload = {
+        id: 1,
+        username: 'l',
+        role: AuthJwtRole.USER,
+      };
+      const jwtService = app.get(JwtService);
+      const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });
+
+      return request(app.getHttpServer())
+        .post(url)
+        .send(dto)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(400);
     });
   });
 
