@@ -66,7 +66,7 @@ describe('MailService', () => {
       subject: 'Сброс пароля в приложении Бюджет',
       template: './reset-password',
       context: {
-        url: `http://localhost/api/auth/reset-password?token=${token}&type=bearer`,
+        url: `http://localhost/change-password?token=${token}&type=bearer`,
       },
     });
   });

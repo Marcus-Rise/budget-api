@@ -27,7 +27,7 @@ class MailService {
   }
 
   async sendResetPassword(userEmail: string, token: string) {
-    const url = new URL('/api/auth/reset-password', this._config.frontendBaseUrl);
+    const url = new URL('/change-password', this._config.frontendBaseUrl);
     url.searchParams.set('token', token);
     url.searchParams.set('type', 'bearer');
 

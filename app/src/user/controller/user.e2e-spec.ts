@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtConfig } from '../../auth/config/jwt.config';
 import type { User } from '../entities/user.entity';
-import { AuthJwtPermissions, IAuthJwtPayload } from '../../auth/types';
+import { AuthJwtRole, IAuthJwtPayload } from '../../auth/types';
 
 const findOne = jest.fn();
 const remove = jest.fn();
@@ -61,7 +61,7 @@ describe('UserController (e2e)', () => {
       const jwtPayload: IAuthJwtPayload = {
         id: 1,
         username: 'l',
-        permissions: [AuthJwtPermissions.USER],
+        role: AuthJwtRole.USER,
       };
       const user: User = { id: 1, login: 'l', password: 'p', isActive: true };
       const jwtService = app.get(JwtService);
@@ -88,7 +88,7 @@ describe('UserController (e2e)', () => {
       const jwtPayload: IAuthJwtPayload = {
         id: 1,
         username: 'l',
-        permissions: [AuthJwtPermissions.USER],
+        role: AuthJwtRole.USER,
       };
       const jwtService = app.get(JwtService);
       const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });

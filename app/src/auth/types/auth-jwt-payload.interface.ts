@@ -1,4 +1,4 @@
-enum AuthJwtPermissions {
+enum AuthJwtRole {
   USER = 'user',
   EMAIL = 'email',
 }
@@ -6,8 +6,8 @@ enum AuthJwtPermissions {
 interface IAuthJwtPayload {
   id: number;
   username: string;
-  permissions: AuthJwtPermissions[];
+  role: AuthJwtRole;
 }
 
 export type { IAuthJwtPayload };
-export { AuthJwtPermissions };
+export { AuthJwtRole };

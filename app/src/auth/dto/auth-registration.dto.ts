@@ -1,10 +1,11 @@
 import { IsEmail, MinLength } from 'class-validator';
+import { PASSWORD_MIN_LENGTH } from './validators';
 
 class AuthRegistrationDto {
   @IsEmail()
   login: string;
 
-  @MinLength(8)
+  @MinLength(PASSWORD_MIN_LENGTH)
   password: string;
 }
 

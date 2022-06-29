@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from '../service';
+import { AuthJwtRole } from '../types';
 
 const registerUser = jest.fn();
 const generateToken = jest.fn();
@@ -8,6 +9,7 @@ const generateRefreshToken = jest.fn();
 const generateAccessTokenFromRefreshToken = jest.fn();
 const activateUser = jest.fn();
 const resetPassword = jest.fn();
+const changeUserPassword = jest.fn();
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -24,6 +26,7 @@ describe('AuthController', () => {
             generateAccessTokenFromRefreshToken,
             activateUser,
             resetPassword,
+            changeUserPassword,
           },
         },
       ],
@@ -40,6 +43,7 @@ describe('AuthController', () => {
     generateAccessTokenFromRefreshToken.mockReset();
     activateUser.mockReset();
     resetPassword.mockReset();
+    changeUserPassword.mockReset();
   });
 
   it('should be defined', () => {
@@ -59,7 +63,7 @@ describe('AuthController', () => {
   describe('emailConfirm', () => {
     it('should activate user', async () => {
       const userId = 1;
-      await controller.emailConfirm({ user: { id: userId, permissions: [], username: '' } });
+      await controller.emailConfirm({ user: { id: userId, role: AuthJwtRole.USER, username: '' } });
 
       expect(activateUser).toHaveBeenNthCalledWith(1, userId);
     });
@@ -71,6 +75,19 @@ describe('AuthController', () => {
       await controller.resetPassword(dto);
 
       expect(resetPassword).toHaveBeenNthCalledWith(1, dto);
+    });
+  });
+
+  describe('changePassword', () => {
+    it('should change password', async () => {
+      const dto = { password: 'l' };
+      const userId = 1;
+      await controller.changePassword(
+        { user: { id: userId, role: AuthJwtRole.USER, username: '' } },
+        dto,
+      );
+
+      expect(changeUserPassword).toHaveBeenNthCalledWith(1, userId, dto);
     });
   });
 

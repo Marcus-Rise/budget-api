@@ -9,7 +9,6 @@ type JwtConfig = JwtModuleOptions;
 const jwtConfigFactory: ConfigFactory<JwtConfig> = () => ({
   secret: process.env.JWT_SECRET,
   signOptions: {
-    expiresIn: '60s',
     audience: process.env.JWT_AUDIENCE,
     issuer: process.env.JWT_ISSUER,
   },

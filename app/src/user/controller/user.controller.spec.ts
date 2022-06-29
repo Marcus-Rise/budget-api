@@ -3,6 +3,7 @@ import { UserController } from './user.controller';
 import { UserService } from '../service';
 import { NotFoundException } from '@nestjs/common';
 import type { User } from '../entities/user.entity';
+import { AuthJwtRole } from '../../auth/types';
 
 const findOne = jest.fn();
 const remove = jest.fn();
@@ -37,7 +38,7 @@ describe('UserController', () => {
     it('should return user dto', async () => {
       findOne.mockReturnValueOnce(<User>{ password: 'pas', login: 'l', id: 1, isActive: false });
 
-      const user = await controller.me({ user: { id: 1, username: '', permissions: [] } });
+      const user = await controller.me({ user: { id: 1, username: '', role: AuthJwtRole.USER } });
 
       expect(user).not.toHaveProperty('password');
       expect(user).not.toHaveProperty('id');
@@ -48,14 +49,14 @@ describe('UserController', () => {
       findOne.mockReturnValueOnce(null);
 
       await expect(
-        controller.me({ user: { id: 1, username: '', permissions: [] } }),
+        controller.me({ user: { id: 1, username: '', role: AuthJwtRole.USER } }),
       ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('remove', () => {
     it('should remove user', async () => {
-      await controller.remove({ user: { id: 1, username: '', permissions: [] } });
+      await controller.remove({ user: { id: 1, username: '', role: AuthJwtRole.USER } });
 
       expect(remove).toHaveBeenCalledTimes(1);
     });

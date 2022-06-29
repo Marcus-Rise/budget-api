@@ -6,17 +6,18 @@ import {
 } from '@nestjs/common';
 import { UserService } from '../../user/service';
 import { AuthRegistrationDto } from '../dto/auth-registration.dto';
-import { AuthJwtPermissions, IAuthJwtPayload, UserWithoutPassword } from '../types';
+import { AuthJwtRole, IAuthJwtPayload, UserWithoutPassword } from '../types';
 import { JwtService } from '@nestjs/jwt';
 import { LessThan, Repository } from 'typeorm';
 import { RefreshToken } from '../entities/refresh-token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshTokenEntityFactory } from '../entities/refresh-token.entity.factory';
 import { ConfigType } from '@nestjs/config';
-import { authConfig } from '../config/auth.config';
+import { authConfig, SessionTTL } from '../config/auth.config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MailService } from '../../mail/mail.service';
 import { AuthResetPasswordDto } from '../dto/auth-reset-password.dto';
+import { AuthChangePasswordDto } from '../dto/auth-change-password.dto';
 
 @Injectable()
 class AuthService {
@@ -47,7 +48,7 @@ class AuthService {
 
     delete user.password;
 
-    const emailToken = await this.generateEmailToken(user);
+    const emailToken = await this.generateToken(user, AuthJwtRole.EMAIL, '1d');
 
     await this._mail.sendEmailConfirmation(user.login, emailToken);
 
@@ -58,7 +59,7 @@ class AuthService {
     const user = await this._users.findByLogin(dto.login);
 
     if (user) {
-      const emailToken = await this.generateEmailToken(user);
+      const emailToken = await this.generateToken(user, AuthJwtRole.EMAIL, '10m');
 
       await this._mail.sendResetPassword(user.login, emailToken);
     }
@@ -76,28 +77,16 @@ class AuthService {
     return this._users.update(user);
   }
 
-  async generateToken(user: UserWithoutPassword) {
+  async generateToken(user: UserWithoutPassword, role: AuthJwtRole, expiresIn?: SessionTTL) {
     const payload: IAuthJwtPayload = {
       username: user.login,
       id: user.id,
-      permissions: [AuthJwtPermissions.USER],
+      role,
     };
 
     return this._jwt.signAsync(payload, {
       subject: String(user.id),
-    });
-  }
-
-  async generateEmailToken(user: UserWithoutPassword) {
-    const payload: IAuthJwtPayload = {
-      username: user.login,
-      id: user.id,
-      permissions: [AuthJwtPermissions.EMAIL],
-    };
-
-    return this._jwt.signAsync(payload, {
-      subject: String(user.id),
-      expiresIn: '1d',
+      expiresIn: expiresIn ?? '60s',
     });
   }
 
@@ -149,7 +138,7 @@ class AuthService {
       throw new UnprocessableEntityException('Refresh token malformed');
     }
 
-    return this.generateToken(user);
+    return this.generateToken(user, AuthJwtRole.USER);
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM, {
@@ -180,6 +169,18 @@ class AuthService {
     token.isRevoked = true;
 
     return this._refreshToken.save(token);
+  }
+
+  async changeUserPassword(userId: number, dto: AuthChangePasswordDto) {
+    const user = await this._users.findOne(userId);
+
+    if (!user) {
+      throw new NotFoundException("user didn't found");
+    }
+
+    user.password = await this._users.hashPassword(dto.password);
+
+    return this._users.update(user);
   }
 }
 
