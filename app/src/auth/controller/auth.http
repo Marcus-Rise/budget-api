@@ -22,6 +22,20 @@ client.test("Request executed successfully", function() {
   client.assert(response.status === 200, "Response status is not 200");
 });
 %}
+###
+
+POST {{url}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "login": "user@user.user"
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
 
 ###
 
