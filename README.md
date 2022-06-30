@@ -35,6 +35,11 @@ yarn install
 yarn typeorm:config
 ```
 
+- Run migrations
+```shell
+yarn migration:run
+```
+
 - Run local dev server
 ```shell
 yarn start:dev
