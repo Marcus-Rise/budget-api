@@ -1,0 +1,3 @@
+class CreateTransactionDto {}
+
+export { CreateTransactionDto };
