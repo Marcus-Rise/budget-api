@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { Transform } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 
 enum TransactionType {
   DEBIT = 'Доход',
@@ -12,7 +12,7 @@ class Transaction {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @Transform(({ value }) => value.id, { toPlainOnly: true })
+  @Exclude({ toPlainOnly: true })
   @ManyToOne(() => User, (user) => user.transactions)
   user: User;
 
