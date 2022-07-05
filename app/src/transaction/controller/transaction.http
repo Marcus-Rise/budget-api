@@ -1,0 +1,37 @@
+POST {{url}}/api/transaction
+Content-Type: application/json
+Authorization: {{auth_type}} {{auth_token}}
+
+{
+  "title": "tr",
+  "type": "Доход",
+  "amount": 1000,
+  "category": "c",
+  "date": "2022-07-05T09:27:04.982Z"
+}
+
+###
+
+GET {{url}}/api/transaction
+Authorization: {{auth_type}} {{auth_token}}
+
+
+###
+
+GET {{url}}/api/transaction/1
+Authorization: {{auth_type}} {{auth_token}}
+
+###
+
+PATCH {{url}}/api/transaction/1
+Content-Type: application/json
+Authorization: {{auth_type}} {{auth_token}}
+
+{
+  "title": "trtrtr"
+}
+
+###
+
+DELETE {{url}}/api/transaction/1
+Authorization: {{auth_type}} {{auth_token}}

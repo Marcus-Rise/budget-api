@@ -35,8 +35,8 @@ class TransactionController {
 
   @Auth(AuthJwtRole.USER)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this._service.remove(+id);
+  async remove(@Param('id') id: string) {
+    await this._service.remove(+id);
   }
 }
 
