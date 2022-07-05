@@ -99,7 +99,7 @@ describe('AuthController', () => {
       generateRefreshToken.mockReturnValueOnce(refreshToken);
 
       const { access_token, refresh_token, type } = await controller.login({
-        user: { isActive: false, login: 'l', id: 1 },
+        user: { isActive: false, login: 'l', id: 1, transactions: [] },
       });
 
       expect(access_token).toEqual(accessToken);

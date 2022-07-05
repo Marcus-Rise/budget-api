@@ -1,27 +1,55 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTransactionDto } from '../dto/create-transaction.dto';
-import { UpdateTransactionDto } from '../dto/update-transaction.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { TransactionCreateDto } from '../dto/transaction-create.dto';
+import { TransactionUpdateDto } from '../dto/transaction-update.dto';
+import { Repository } from 'typeorm';
+import { Transaction } from '../entities/transaction.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserService } from '../../user/service';
+import { TransactionEntityFactory } from '../entities/transaction.entity.factory';
 
 @Injectable()
 class TransactionService {
-  create(userId: number, createTransactionDto: CreateTransactionDto) {
-    return 'This action adds a new transaction';
+  constructor(
+    @InjectRepository(Transaction) private readonly _repo: Repository<Transaction>,
+    private readonly _users: UserService,
+  ) {}
+
+  async create(userId: number, dto: TransactionCreateDto) {
+    const user = await this._users.findOne(userId);
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    const transaction = TransactionEntityFactory.fromCreateDto(dto);
+
+    transaction.user = user;
+
+    return this._repo.save(transaction);
   }
 
   findAll(userId: number) {
-    return `This action returns all transaction`;
+    return this._repo.find({ relations: ['user'], where: { user: { id: userId } } });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} transaction`;
+    return this._repo.findOne(id);
   }
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction`;
+  async update(id: number, dto: TransactionUpdateDto) {
+    let transaction = await this._repo.findOne(id);
+
+    if (!transaction) {
+      throw new NotFoundException();
+    }
+
+    transaction = TransactionEntityFactory.fromUpdateDto(dto, transaction);
+
+    return this._repo.save(transaction);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} transaction`;
+    return this._repo.delete({ id });
   }
 }
 

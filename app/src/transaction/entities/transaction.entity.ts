@@ -23,7 +23,7 @@ class Transaction {
   @Column()
   amount: number;
 
-  @Column({ enum: TransactionType })
+  @Column({ type: 'enum', enum: TransactionType })
   type: TransactionType;
 
   @Column()
