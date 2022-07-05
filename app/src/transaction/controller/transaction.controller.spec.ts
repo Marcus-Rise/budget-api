@@ -61,7 +61,7 @@ describe('TransactionController', () => {
     it('should find all user transaction', async () => {
       const userId = 1;
 
-      await controller.findAll({ user: { id: userId } as IAuthJwtPayload });
+      await controller.findAll({ user: { id: userId } as IAuthJwtPayload }, {});
 
       expect(findAll).toHaveBeenNthCalledWith(1, userId);
     });
