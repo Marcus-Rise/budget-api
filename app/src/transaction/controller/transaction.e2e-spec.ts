@@ -4,8 +4,9 @@ import { TransactionService } from '../service';
 import { TransactionController } from './transaction.controller';
 import * as request from 'supertest';
 import { mockAuth } from '../../auth/auth.mock';
-import { UpdateTransactionDto } from '../dto/update-transaction.dto';
-import { CreateTransactionDto } from '../dto/create-transaction.dto';
+import { TransactionUpdateDto } from '../dto/transaction-update.dto';
+import { TransactionCreateDto } from '../dto/transaction-create.dto';
+import { TransactionType } from '../entities/transaction.entity';
 
 const create = jest.fn();
 const findAll = jest.fn();
@@ -54,7 +55,13 @@ describe('TransactionController (e2e)', () => {
     it('should create user transaction', () => {
       return request(app.getHttpServer())
         .post(baseUrl)
-        .send({} as CreateTransactionDto)
+        .send({
+          title: 't',
+          date: new Date(),
+          category: 'c',
+          amount: 1,
+          type: TransactionType.CREDIT,
+        } as TransactionCreateDto)
         .expect(201);
     });
   });
@@ -77,7 +84,7 @@ describe('TransactionController (e2e)', () => {
     it('should update user transaction', () => {
       return request(app.getHttpServer())
         .patch(baseUrl + '/1')
-        .send({} as UpdateTransactionDto)
+        .send({} as TransactionUpdateDto)
         .expect(200);
     });
   });

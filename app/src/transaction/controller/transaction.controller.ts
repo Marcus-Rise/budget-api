@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Request } from '@nestjs/common';
 import { TransactionService } from '../service';
-import { CreateTransactionDto } from '../dto/create-transaction.dto';
-import { UpdateTransactionDto } from '../dto/update-transaction.dto';
+import { TransactionCreateDto } from '../dto/transaction-create.dto';
+import { TransactionUpdateDto } from '../dto/transaction-update.dto';
 import { Auth } from '../../auth/decorators/auth.decorator';
 import { AuthJwtRole, IAuthJwtPayload } from '../../auth/types';
 
@@ -11,7 +11,7 @@ class TransactionController {
 
   @Auth(AuthJwtRole.USER)
   @Post()
-  create(@Request() req: { user: IAuthJwtPayload }, @Body() dto: CreateTransactionDto) {
+  create(@Request() req: { user: IAuthJwtPayload }, @Body() dto: TransactionCreateDto) {
     return this._service.create(req.user.id, dto);
   }
 
@@ -29,7 +29,7 @@ class TransactionController {
 
   @Auth(AuthJwtRole.USER)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateTransactionDto) {
+  update(@Param('id') id: string, @Body() dto: TransactionUpdateDto) {
     return this._service.update(+id, dto);
   }
 

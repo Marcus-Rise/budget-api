@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionController } from './transaction.controller';
 import { TransactionService } from '../service';
 import { IAuthJwtPayload } from '../../auth/types';
-import { CreateTransactionDto } from '../dto/create-transaction.dto';
-import { UpdateTransactionDto } from '../dto/update-transaction.dto';
+import { TransactionCreateDto } from '../dto/transaction-create.dto';
+import { TransactionUpdateDto } from '../dto/transaction-update.dto';
 
 const create = jest.fn();
 const findAll = jest.fn();
@@ -49,7 +49,7 @@ describe('TransactionController', () => {
   describe('create', () => {
     it('should create transaction', async () => {
       const userId = 1;
-      const dto = {} as CreateTransactionDto;
+      const dto = {} as TransactionCreateDto;
 
       await controller.create({ user: { id: userId } as IAuthJwtPayload }, dto);
 
@@ -69,7 +69,7 @@ describe('TransactionController', () => {
 
   describe('update', () => {
     it('should update user transaction', async () => {
-      const dto = {} as UpdateTransactionDto;
+      const dto = {} as TransactionUpdateDto;
 
       await controller.update('1', dto);
 
