@@ -63,7 +63,7 @@ describe('TransactionController', () => {
 
       await controller.findAll({ user: { id: userId } as IAuthJwtPayload }, {});
 
-      expect(findAll).toHaveBeenNthCalledWith(1, userId);
+      expect(findAll).toHaveBeenNthCalledWith(1, userId, {});
     });
   });
 
