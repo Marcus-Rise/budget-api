@@ -73,7 +73,7 @@ describe('TransactionService', () => {
       const result = '';
       findTransaction.mockReturnValueOnce('');
 
-      expect(service.findAll(1)).toEqual(result);
+      expect(service.findAll(1, {})).toEqual(result);
     });
   });
 

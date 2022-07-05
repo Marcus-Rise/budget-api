@@ -1,11 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TransactionCreateDto } from '../dto/transaction-create.dto';
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
-import { Repository } from 'typeorm';
+import { Between, Equal, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { Transaction } from '../entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from '../../user/service';
 import { TransactionEntityFactory } from '../entities/transaction.entity.factory';
+import { TransactionListDto } from '../dto/transaction-list.dto';
+import { FindConditions } from 'typeorm/find-options/FindConditions';
 
 @Injectable()
 class TransactionService {
@@ -28,8 +30,34 @@ class TransactionService {
     return this._repo.save(transaction);
   }
 
-  findAll(userId: number) {
-    return this._repo.find({ relations: ['user'], where: { user: { id: userId } } });
+  findAll(userId: number, query: TransactionListDto) {
+    const filter: FindConditions<Transaction> = {};
+
+    if (query.minAmount !== undefined && query.maxAmount !== undefined) {
+      filter.amount = Between(query.minAmount, query.maxAmount);
+    } else if (query.minAmount !== undefined) {
+      filter.amount = MoreThanOrEqual(query.minAmount);
+    } else if (query.maxAmount !== undefined) {
+      filter.amount = LessThanOrEqual(query.maxAmount);
+    }
+
+    if (!!query.category) {
+      filter.category = Equal(query.category);
+    }
+
+    if (!!query.type) {
+      filter.type = Equal(query.type);
+    }
+
+    if (query.minDate !== undefined && query.maxDate !== undefined) {
+      filter.date = Between(query.minDate, query.maxDate);
+    } else if (query.minDate !== undefined) {
+      filter.date = MoreThanOrEqual(query.minDate);
+    } else if (query.maxDate !== undefined) {
+      filter.date = LessThanOrEqual(query.maxDate);
+    }
+
+    return this._repo.find({ relations: ['user'], where: { ...filter, user: { id: userId } } });
   }
 
   findOne(uuid: string) {

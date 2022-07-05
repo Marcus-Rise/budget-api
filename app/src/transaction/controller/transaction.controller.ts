@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request } from '@nestjs/common';
 import { TransactionService } from '../service';
 import { TransactionCreateDto } from '../dto/transaction-create.dto';
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
 import { Auth } from '../../auth/decorators/auth.decorator';
 import { AuthJwtRole, IAuthJwtPayload } from '../../auth/types';
+import { TransactionListDto } from '../dto/transaction-list.dto';
 
 @Controller('/api/transaction')
 class TransactionController {
@@ -17,8 +18,8 @@ class TransactionController {
 
   @Auth(AuthJwtRole.USER)
   @Get()
-  findAll(@Request() req: { user: IAuthJwtPayload }) {
-    return this._service.findAll(req.user.id);
+  findAll(@Request() req: { user: IAuthJwtPayload }, @Query() query: TransactionListDto) {
+    return this._service.findAll(req.user.id, query);
   }
 
   @Auth(AuthJwtRole.USER)
