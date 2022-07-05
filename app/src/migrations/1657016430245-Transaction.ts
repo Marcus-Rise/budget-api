@@ -1,14 +1,14 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Transaction1657012069017 implements MigrationInterface {
-  name = 'Transaction1657012069017';
+export class Transaction1657016430245 implements MigrationInterface {
+  name = 'Transaction1657016430245';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `CREATE TYPE "public"."transaction_type_enum" AS ENUM('Доход', 'Расход')`,
     );
     await queryRunner.query(
-      `CREATE TABLE "transaction" ("id" SERIAL NOT NULL, "title" character varying NOT NULL, "category" character varying NOT NULL, "amount" integer NOT NULL, "type" "public"."transaction_type_enum" NOT NULL, "date" TIMESTAMP NOT NULL, "userId" integer, CONSTRAINT "PK_89eadb93a89810556e1cbcd6ab9" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "transaction" ("uuid" uuid NOT NULL DEFAULT uuid_generate_v4(), "title" character varying NOT NULL, "category" character varying NOT NULL, "amount" integer NOT NULL, "type" "public"."transaction_type_enum" NOT NULL, "date" TIMESTAMP NOT NULL, "userId" integer, CONSTRAINT "PK_fcce0ce5cc7762e90d2cc7e2307" PRIMARY KEY ("uuid"))`,
     );
     await queryRunner.query(
       `ALTER TABLE "transaction" ADD CONSTRAINT "FK_605baeb040ff0fae995404cea37" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,

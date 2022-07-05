@@ -32,12 +32,12 @@ class TransactionService {
     return this._repo.find({ relations: ['user'], where: { user: { id: userId } } });
   }
 
-  findOne(id: number) {
-    return this._repo.findOne(id);
+  findOne(uuid: string) {
+    return this._repo.findOne(uuid);
   }
 
-  async update(id: number, dto: TransactionUpdateDto) {
-    let transaction = await this._repo.findOne(id);
+  async update(uuid: string, dto: TransactionUpdateDto) {
+    let transaction = await this._repo.findOne(uuid);
 
     if (!transaction) {
       throw new NotFoundException();
@@ -48,8 +48,8 @@ class TransactionService {
     return this._repo.save(transaction);
   }
 
-  remove(id: number) {
-    return this._repo.delete({ id });
+  remove(uuid: string) {
+    return this._repo.delete({ uuid });
   }
 }
 

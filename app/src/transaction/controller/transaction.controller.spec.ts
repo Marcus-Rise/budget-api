@@ -70,18 +70,21 @@ describe('TransactionController', () => {
   describe('update', () => {
     it('should update user transaction', async () => {
       const dto = {} as TransactionUpdateDto;
+      const transactionId = '1';
 
-      await controller.update('1', dto);
+      await controller.update(transactionId, dto);
 
-      expect(update).toHaveBeenNthCalledWith(1, 1, dto);
+      expect(update).toHaveBeenNthCalledWith(1, transactionId, dto);
     });
   });
 
   describe('remove', () => {
     it('should delete user transaction', async () => {
-      await controller.remove('1');
+      const transactionId = '1';
 
-      expect(remove).toHaveBeenNthCalledWith(1, 1);
+      await controller.remove(transactionId);
+
+      expect(remove).toHaveBeenNthCalledWith(1, transactionId);
     });
   });
 });

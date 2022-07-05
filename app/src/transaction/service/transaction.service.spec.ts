@@ -82,7 +82,7 @@ describe('TransactionService', () => {
       const result = '';
       findOneTransaction.mockReturnValueOnce('');
 
-      expect(service.findOne(1)).toEqual(result);
+      expect(service.findOne('1')).toEqual(result);
     });
   });
 
@@ -91,7 +91,7 @@ describe('TransactionService', () => {
       const result = '';
       removeTransaction.mockReturnValueOnce('');
 
-      expect(service.remove(1)).toEqual(result);
+      expect(service.remove('1')).toEqual(result);
     });
   });
 
@@ -102,13 +102,13 @@ describe('TransactionService', () => {
       findOneTransaction.mockReturnValueOnce({} as Transaction);
       saveTransaction.mockReturnValueOnce(result);
 
-      await expect(service.update(1, {} as TransactionUpdateDto)).resolves.toEqual(result);
+      await expect(service.update('1', {} as TransactionUpdateDto)).resolves.toEqual(result);
     });
 
     it('should throw error if transaction not exists', async () => {
       findOneTransaction.mockReturnValueOnce(undefined);
 
-      await expect(service.update(1, {} as TransactionUpdateDto)).rejects.toThrow(
+      await expect(service.update('1', {} as TransactionUpdateDto)).rejects.toThrow(
         NotFoundException,
       );
     });

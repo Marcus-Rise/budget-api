@@ -22,21 +22,25 @@ class TransactionController {
   }
 
   @Auth(AuthJwtRole.USER)
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this._service.findOne(+id);
+  @Get(':uuid')
+  findOne(@Param('uuid') uuid: string) {
+    return this._service.findOne(uuid);
   }
 
   @Auth(AuthJwtRole.USER)
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: TransactionUpdateDto) {
-    return this._service.update(+id, dto);
+  @Patch(':uuid')
+  update(@Param('uuid') uuid: string, @Body() dto: TransactionUpdateDto) {
+    return this._service.update(uuid, dto);
   }
 
   @Auth(AuthJwtRole.USER)
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    await this._service.remove(+id);
+  @Delete(':uuid')
+  async remove(@Param('uuid') uuid: string) {
+    await this._service.remove(uuid);
+
+    return {
+      status: 'ok',
+    };
   }
 }
 

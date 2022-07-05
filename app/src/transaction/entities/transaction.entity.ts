@@ -9,8 +9,8 @@ enum TransactionType {
 
 @Entity()
 class Transaction {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  uuid: string;
 
   @Transform(({ value }) => value.id, { toPlainOnly: true })
   @ManyToOne(() => User, (user) => user.transactions)
