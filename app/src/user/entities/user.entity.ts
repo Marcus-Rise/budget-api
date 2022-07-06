@@ -14,7 +14,7 @@ class User {
   @Column({ default: false })
   isActive: boolean;
 
-  @Column({ nullable: true })
+  @Column()
   password: string;
 
   @OneToMany(() => Transaction, (transaction) => transaction.user)
