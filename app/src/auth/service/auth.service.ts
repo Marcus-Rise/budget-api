@@ -47,7 +47,11 @@ class AuthService {
 
     delete user.password;
 
-    const emailToken = await this.generateToken(user, AuthJwtRole.EMAIL, '1d');
+    const emailToken = await this.generateToken(
+      user,
+      AuthJwtRole.EMAIL,
+      this._config.registrationEmailTokenTTL,
+    );
 
     await this._mail.sendEmailConfirmation(user.login, emailToken);
 
@@ -58,7 +62,11 @@ class AuthService {
     const user = await this._users.findByLogin(dto.login);
 
     if (user) {
-      const emailToken = await this.generateToken(user, AuthJwtRole.EMAIL, '10m');
+      const emailToken = await this.generateToken(
+        user,
+        AuthJwtRole.EMAIL,
+        this._config.resetPasswordEmailTokenTTL,
+      );
 
       await this._mail.sendResetPassword(user.login, emailToken);
     }
@@ -85,7 +93,7 @@ class AuthService {
 
     return this._jwt.signAsync(payload, {
       subject: String(user.id),
-      expiresIn: expiresIn ?? '60s',
+      expiresIn: expiresIn ?? this._config.tokenTTL,
     });
   }
 

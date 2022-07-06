@@ -49,6 +49,9 @@ jobs:
           ADMINER_PASSWORD: ${{ secrets.ADMINER_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           SESSION_TTL: ${{ secrets.SESSION_TTL }}
+          TOKEN_TTL: ${{ secrets.TOKEN_TTL }}
+          REGISTRATION_EMAIL_TOKEN_TTL: ${{ secrets.REGISTRATION_EMAIL_TOKEN_TTL }}
+          RESET_PASSWORD_EMAIL_TOKEN_TTL: ${{ secrets.RESET_PASSWORD_EMAIL_TOKEN_TTL }}
           MAIL_HOST: ${{ secrets.MAIL_HOST }}
           MAIL_PORT: ${{ secrets.MAIL_PORT }}
           MAIL_LOGIN: ${{ secrets.MAIL_LOGIN }}
