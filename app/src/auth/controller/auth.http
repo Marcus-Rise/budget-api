@@ -64,6 +64,7 @@ Content-Type: application/json
 }
 
 > {%
+client.global.set("auth_type", response.body.type);
 client.global.set("auth_token", response.body.access_token);
 client.global.set("refresh_token", response.body.refresh_token);
 
@@ -76,7 +77,6 @@ client.test("Request executed successfully", function() {
 
 POST {{url}}/api/auth/refresh
 Content-Type: application/json
-Authorization: Bearer {{auth_token}}
 
 {
   "refresh_token": "{{refresh_token}}"

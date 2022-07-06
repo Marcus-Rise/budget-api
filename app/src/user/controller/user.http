@@ -1,5 +1,5 @@
 GET {{url}}/api/user
-Authorization: Bearer {{auth_token}}
+Authorization: {{auth_type}} {{auth_token}}
 
 > {%
 client.test("Request executed successfully", function() {
@@ -10,7 +10,7 @@ client.test("Request executed successfully", function() {
 ###
 
 DELETE {{url}}/api/user
-Authorization: Bearer {{auth_token}}
+Authorization: {{auth_type}} {{auth_token}}
 
 > {%
 client.test("Request executed successfully", function() {
