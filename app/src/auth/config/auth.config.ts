@@ -9,10 +9,16 @@ const AUTH_CONFIG_TOKEN = 'auth';
 
 type AuthConfig = {
   sessionTTL: SessionTTL;
+  tokenTTL: SessionTTL;
+  registrationEmailTokenTTL: SessionTTL;
+  resetPasswordEmailTokenTTL: SessionTTL;
 };
 
 const authConfigFactory: ConfigFactory<AuthConfig> = () => ({
   sessionTTL: process.env.SESSION_TTL as StringValue,
+  tokenTTL: process.env.TOKEN_TTL as StringValue,
+  registrationEmailTokenTTL: process.env.REGISTRATION_EMAIL_TOKEN_TTL as StringValue,
+  resetPasswordEmailTokenTTL: process.env.RESET_PASSWORD_EMAIL_TOKEN_TTL as StringValue,
 });
 
 const authConfig = registerAs(AUTH_CONFIG_TOKEN, authConfigFactory);

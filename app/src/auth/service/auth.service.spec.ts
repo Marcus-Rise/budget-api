@@ -56,6 +56,9 @@ describe('AuthService', () => {
           provide: authConfig.KEY,
           useValue: {
             sessionTTL: '10000000',
+            tokenTTL: '100000',
+            registrationEmailTokenTTL: '10',
+            resetPasswordEmailTokenTTL: '20',
           },
         },
         { provide: JwtService, useValue: { signAsync: generateJwt, verifyAsync: verifyJwt } },
@@ -113,13 +116,22 @@ describe('AuthService', () => {
 
   describe('registerUser', () => {
     it('should create inactive user and send verification email', async () => {
-      createUser.mockImplementationOnce((user) => user);
+      const user: User = {
+        isActive: false,
+        password: 'password',
+        id: 1,
+        login: 'login',
+        transactions: [],
+        refreshTokens: [],
+      };
+      createUser.mockReturnValueOnce(user);
       const emailToken = 'token';
       service.generateToken = jest.fn(async () => emailToken);
 
       const dto = { login: 'login', password: 'password' };
       const { isActive, login } = await service.registerUser(dto);
 
+      expect(service.generateToken).toHaveBeenNthCalledWith(1, user, AuthJwtRole.EMAIL, '10');
       expect(login).toEqual(dto.login);
       expect(isActive).toBeFalsy();
       expect(sendEmailConfirmation).toHaveBeenNthCalledWith(1, login, emailToken);
@@ -166,7 +178,7 @@ describe('AuthService', () => {
       service.generateToken = jest.fn(async () => token);
       await service.resetPassword({ login: user.login });
 
-      expect(service.generateToken).toHaveBeenNthCalledWith(1, user, AuthJwtRole.EMAIL, '10m');
+      expect(service.generateToken).toHaveBeenNthCalledWith(1, user, AuthJwtRole.EMAIL, '20');
       expect(sendResetPassword).toHaveBeenNthCalledWith(1, user.login, token);
     });
   });
