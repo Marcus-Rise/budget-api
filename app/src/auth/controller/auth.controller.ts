@@ -1,12 +1,13 @@
 import { Body, Controller, Get, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthRegistrationDto } from '../dto/auth-registration.dto';
 import { AuthService } from '../service';
-import { AuthJwtRole, IAuthJwtPayload, UserWithoutPassword } from '../types';
+import { AuthJwtRole, IAuthJwtPayload } from '../types';
 import { AuthLocalGuard } from '../guard/auth-local.guard';
 import { AuthRefreshDto } from '../dto/auth-refresh.dto';
 import { Auth } from '../decorators/auth.decorator';
 import { AuthResetPasswordDto } from '../dto/auth-reset-password.dto';
 import { AuthChangePasswordDto } from '../dto/auth-change-password.dto';
+import { User } from '../../user/entities/user.entity';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -58,7 +59,7 @@ export class AuthController {
   @UseGuards(AuthLocalGuard)
   @Post('/login')
   @HttpCode(200)
-  async login(@Request() req: { user: UserWithoutPassword }) {
+  async login(@Request() req: { user: User }) {
     const token = await this._service.generateToken(req.user, AuthJwtRole.USER);
     const refreshToken = await this._service.generateRefreshToken(req.user);
 

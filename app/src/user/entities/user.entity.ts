@@ -1,5 +1,6 @@
 import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Transaction } from '../../transaction/entities/transaction.entity';
+import { RefreshToken } from '../../auth/entities/refresh-token.entity';
 
 @Entity()
 class User {
@@ -18,6 +19,9 @@ class User {
 
   @OneToMany(() => Transaction, (transaction) => transaction.user)
   transactions: Transaction[];
+
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
+  refreshTokens: RefreshToken[];
 }
 
 export { User };
