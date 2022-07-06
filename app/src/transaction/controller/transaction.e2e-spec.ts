@@ -14,9 +14,10 @@ const findOne = jest.fn();
 const update = jest.fn();
 const remove = jest.fn();
 
-describe('TransactionController (e2e)', () => {
+const baseUrl = '/api/transaction';
+
+describe(`TransactionController (e2e) ${baseUrl}`, () => {
   const userId = 1;
-  const baseUrl = '/api/transaction';
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -51,7 +52,7 @@ describe('TransactionController (e2e)', () => {
     remove.mockReset();
   });
 
-  describe(`POST ${baseUrl}`, () => {
+  describe(`POST /`, () => {
     it('should create user transaction', () => {
       return request(app.getHttpServer())
         .post(baseUrl)
@@ -66,13 +67,13 @@ describe('TransactionController (e2e)', () => {
     });
   });
 
-  describe(`GET ${baseUrl}`, () => {
+  describe(`GET /`, () => {
     it('should find all user transactions', () => {
       return request(app.getHttpServer()).get(baseUrl).expect(200);
     });
   });
 
-  describe(`GET ${baseUrl}/:id`, () => {
+  describe(`GET /:id`, () => {
     it('should find user transaction', () => {
       return request(app.getHttpServer())
         .get(baseUrl + '/1')
@@ -80,7 +81,7 @@ describe('TransactionController (e2e)', () => {
     });
   });
 
-  describe(`PATCH ${baseUrl}/:id`, () => {
+  describe(`PATCH /:id`, () => {
     it('should update user transaction', () => {
       return request(app.getHttpServer())
         .patch(baseUrl + '/1')
@@ -89,7 +90,7 @@ describe('TransactionController (e2e)', () => {
     });
   });
 
-  describe(`DELETE ${baseUrl}/:id`, () => {
+  describe(`DELETE /:id`, () => {
     it('should delete user transaction', () => {
       return request(app.getHttpServer())
         .delete(baseUrl + '/1')

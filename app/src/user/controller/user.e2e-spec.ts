@@ -3,43 +3,30 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { UserController } from './user.controller';
 import { UserService } from '../service';
-import { AuthJwtStrategy } from '../../auth/strategy/auth-jwt.strategy';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { JwtConfig } from '../../auth/config/jwt.config';
-import type { User } from '../entities/user.entity';
-import { AuthJwtRole, IAuthJwtPayload } from '../../auth/types';
+import { mockAuth } from '../../auth/auth.mock';
 
 const findOne = jest.fn();
 const remove = jest.fn();
 
-const jwtConfig: JwtConfig = {
-  secret: 'secret',
-};
+const baseUrl = '/api/user';
 
-const userUrl = '/api/user';
-
-describe('UserController (e2e)', () => {
+describe(`UserController (e2e) ${baseUrl}`, () => {
+  const userId = 1;
   let app: INestApplication;
 
   beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: ConfigService,
-          useValue: {
-            get: () => jwtConfig,
+    const moduleFixture: TestingModule = await mockAuth(
+      { id: userId },
+      Test.createTestingModule({
+        providers: [
+          {
+            provide: UserService,
+            useValue: { findOne, remove },
           },
-        },
-        JwtService,
-        AuthJwtStrategy,
-        {
-          provide: UserService,
-          useValue: { findOne, remove },
-        },
-      ],
-      controllers: [UserController],
-    }).compile();
+        ],
+        controllers: [UserController],
+      }),
+    ).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -50,62 +37,18 @@ describe('UserController (e2e)', () => {
     remove.mockReset();
   });
 
-  describe('me', () => {
-    it('should reject unauthorized request', () => {
-      findOne.mockReturnValueOnce({});
-
-      return request(app.getHttpServer()).get(userUrl).expect(401);
-    });
-
+  describe('GET /', () => {
     it('should return client user', () => {
-      const jwtPayload: IAuthJwtPayload = {
-        id: 1,
-        username: 'l',
-        role: AuthJwtRole.USER,
-      };
-      const user: User = {
-        id: 1,
-        login: 'l',
-        password: 'p',
-        isActive: true,
-        transactions: [],
-        refreshTokens: [],
-      };
-      const jwtService = app.get(JwtService);
-      const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });
-
+      const user = { login: 'l' };
       findOne.mockReturnValueOnce(user);
 
-      return request(app.getHttpServer())
-        .get(userUrl)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(200)
-        .expect({ login: 'l' });
+      return request(app.getHttpServer()).get(baseUrl).expect(200).expect(user);
     });
   });
 
-  describe('remove', () => {
-    it('should reject unauthorized request', () => {
-      findOne.mockReturnValueOnce({});
-
-      return request(app.getHttpServer()).get(userUrl).expect(401);
-    });
-
-    it('should delete user', async () => {
-      const jwtPayload: IAuthJwtPayload = {
-        id: 1,
-        username: 'l',
-        role: AuthJwtRole.USER,
-      };
-      const jwtService = app.get(JwtService);
-      const token = jwtService.sign(jwtPayload, { secret: jwtConfig.secret });
-
-      await request(app.getHttpServer())
-        .delete(userUrl)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(200);
-
-      expect(remove).toHaveBeenCalledTimes(1);
+  describe('DELETE /', () => {
+    it('should delete user', () => {
+      return request(app.getHttpServer()).delete(baseUrl).expect(200);
     });
   });
 });
