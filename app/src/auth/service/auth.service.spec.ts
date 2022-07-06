@@ -87,13 +87,12 @@ describe('AuthService', () => {
   });
 
   describe('validateUser', () => {
-    it('should return user without password', async () => {
+    it('should return user', async () => {
       findByLoginPassword.mockReturnValueOnce(
         UserEntityFactory.fromCreateDto({ isActive: true, password: 'p', login: 'l' }),
       );
-      const res = await service.validateUser('login', 'password');
 
-      expect(res).not.toHaveProperty('password');
+      await service.validateUser('login', 'password');
     });
 
     it('should return null if password is not valid', async () => {
@@ -153,7 +152,14 @@ describe('AuthService', () => {
     });
 
     it('should send reset password email if user exists', async () => {
-      const user: User = { isActive: true, password: 'p', id: 1, login: 'l', transactions: [] };
+      const user: User = {
+        isActive: true,
+        password: 'p',
+        id: 1,
+        login: 'l',
+        transactions: [],
+        refreshTokens: [],
+      };
       findByLogin.mockReturnValueOnce(user);
 
       const token = 'token';
@@ -171,7 +177,7 @@ describe('AuthService', () => {
       generateJwt.mockReturnValueOnce(token);
 
       const accessToken = await service.generateToken(
-        { isActive: false, login: 'l', id: 1, transactions: [] },
+        { isActive: false, login: 'l', id: 1, transactions: [], refreshTokens: [] },
         AuthJwtRole.USER,
       );
 
@@ -193,6 +199,8 @@ describe('AuthService', () => {
         login: 'l',
         id: 1,
         transactions: [],
+        refreshTokens: [],
+        password: '',
       });
 
       expect(saveRefreshToken).toHaveBeenCalledTimes(1);
@@ -205,7 +213,7 @@ describe('AuthService', () => {
       verifyJwt.mockReturnValueOnce({ jti: 1, sub: 1 });
 
       const refreshToken = RefreshTokenEntityFactory.create(
-        { id: 1, login: '', isActive: true, transactions: [] },
+        { id: 1, login: '', isActive: true, transactions: [], refreshTokens: [], password: '' },
         '10000',
       );
       findRefreshToken.mockReturnValueOnce(refreshToken);
@@ -234,7 +242,7 @@ describe('AuthService', () => {
       verifyJwt.mockReturnValueOnce({ jti: 1, sub: 1 });
 
       const refreshToken = RefreshTokenEntityFactory.create(
-        { id: 1, login: '', isActive: true, transactions: [] },
+        { id: 1, login: '', isActive: true, transactions: [], refreshTokens: [], password: '' },
         '-100',
       );
       findRefreshToken.mockReturnValueOnce(refreshToken);
@@ -250,7 +258,7 @@ describe('AuthService', () => {
       verifyJwt.mockReturnValueOnce({ jti: 1, sub: 1 });
 
       const refreshToken = RefreshTokenEntityFactory.create(
-        { id: 1, login: '', isActive: true, transactions: [] },
+        { id: 1, login: '', isActive: true, transactions: [], refreshTokens: [], password: '' },
         '1000',
       );
       refreshToken.isRevoked = true;
@@ -267,7 +275,7 @@ describe('AuthService', () => {
       verifyJwt.mockReturnValueOnce({ jti: 1, sub: 1 });
 
       const refreshToken = RefreshTokenEntityFactory.create(
-        { id: 1, login: '', isActive: true, transactions: [] },
+        { id: 1, login: '', isActive: true, transactions: [], refreshTokens: [], password: '' },
         '1000',
       );
       findRefreshToken.mockReturnValueOnce(refreshToken);
@@ -291,6 +299,8 @@ describe('AuthService', () => {
           login: '',
           id: 2,
           transactions: [],
+          refreshTokens: [],
+          password: '',
         },
         '200',
       );

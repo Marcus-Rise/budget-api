@@ -18,6 +18,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { MailService } from '../../mail/mail.service';
 import { AuthResetPasswordDto } from '../dto/auth-reset-password.dto';
 import { AuthChangePasswordDto } from '../dto/auth-change-password.dto';
+import { User } from '../../user/entities/user.entity';
 
 @Injectable()
 class AuthService {
@@ -31,14 +32,12 @@ class AuthService {
     private readonly _mail: MailService,
   ) {}
 
-  async validateUser(login: string, password: string): Promise<UserWithoutPassword | null> {
+  async validateUser(login: string, password: string): Promise<User | null> {
     const user = await this._users.findByLoginPassword(password, login);
 
     if (!user || !user.isActive) {
       return null;
     }
-
-    delete user.password;
 
     return user;
   }
@@ -90,7 +89,7 @@ class AuthService {
     });
   }
 
-  async generateRefreshToken(user: UserWithoutPassword) {
+  async generateRefreshToken(user: User) {
     const expiresIn = this._config.sessionTTL;
 
     const refreshToken = await this._refreshToken.save(
