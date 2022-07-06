@@ -5,7 +5,7 @@ import { Transform } from 'class-transformer';
 class AuthRegistrationDto {
   @IsNotEmpty()
   @IsEmail()
-  @Transform(({ value }) => value.toLowerCase())
+  @Transform(({ value }) => value.toLowerCase(), { toClassOnly: true })
   login: string;
 
   @MinLength(PASSWORD_MIN_LENGTH)

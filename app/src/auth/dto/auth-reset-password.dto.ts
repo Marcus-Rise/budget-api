@@ -4,7 +4,7 @@ import { Transform } from 'class-transformer';
 class AuthResetPasswordDto {
   @IsNotEmpty()
   @IsEmail()
-  @Transform(({ value }) => value.toLowerCase())
+  @Transform(({ value }) => value.toLowerCase(), { toClassOnly: true })
   login: string;
 }
 
