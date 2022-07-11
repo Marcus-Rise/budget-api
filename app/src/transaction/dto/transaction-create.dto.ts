@@ -1,6 +1,6 @@
-import { IsDate, IsEnum, IsNotEmpty, Min } from 'class-validator';
+import { IsArray, IsDate, IsEnum, IsNotEmpty, Min, ValidateNested } from 'class-validator';
 import { TransactionType } from '../entities/transaction.entity';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 class TransactionCreateDto {
   @IsNotEmpty()
@@ -21,4 +21,11 @@ class TransactionCreateDto {
   date: Date;
 }
 
-export { TransactionCreateDto };
+class TransactionCreateBatchDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TransactionCreateDto)
+  transactions: TransactionCreateDto[];
+}
+
+export { TransactionCreateDto, TransactionCreateBatchDto };

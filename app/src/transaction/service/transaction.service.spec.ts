@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Transaction } from '../entities/transaction.entity';
 import { UserService } from '../../user/service';
 import { User } from '../../user/entities/user.entity';
-import { TransactionCreateDto } from '../dto/transaction-create.dto';
+import { TransactionCreateBatchDto, TransactionCreateDto } from '../dto/transaction-create.dto';
 import { NotFoundException } from '@nestjs/common';
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
 
@@ -65,6 +65,27 @@ describe('TransactionService', () => {
       await expect(service.create(1, {} as TransactionCreateDto)).rejects.toThrow(
         NotFoundException,
       );
+    });
+  });
+
+  describe('createBatch', () => {
+    it('should create user transaction', async () => {
+      const result = '';
+
+      findOneUser.mockReturnValueOnce({} as User);
+      saveTransaction.mockReturnValueOnce(result);
+
+      await expect(
+        service.createBatch(1, { transactions: [] } as TransactionCreateBatchDto),
+      ).resolves.toEqual(result);
+    });
+
+    it('should throw error if user not exists', async () => {
+      findOneUser.mockReturnValueOnce(undefined);
+
+      await expect(
+        service.createBatch(1, { transactions: [] } as TransactionCreateBatchDto),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 

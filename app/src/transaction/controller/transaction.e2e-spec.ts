@@ -5,10 +5,11 @@ import { TransactionController } from './transaction.controller';
 import * as request from 'supertest';
 import { mockAuth } from '../../auth/auth.mock';
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
-import { TransactionCreateDto } from '../dto/transaction-create.dto';
+import { TransactionCreateBatchDto, TransactionCreateDto } from '../dto/transaction-create.dto';
 import { TransactionType } from '../entities/transaction.entity';
 
 const create = jest.fn();
+const createBatch = jest.fn();
 const findAll = jest.fn();
 const findOne = jest.fn();
 const update = jest.fn();
@@ -29,6 +30,7 @@ describe(`TransactionController (e2e) ${baseUrl}`, () => {
             provide: TransactionService,
             useValue: {
               create,
+              createBatch,
               findAll,
               findOne,
               update,
@@ -46,6 +48,7 @@ describe(`TransactionController (e2e) ${baseUrl}`, () => {
 
   afterEach(() => {
     create.mockReset();
+    createBatch.mockReset();
     findAll.mockReset();
     findOne.mockReset();
     update.mockReset();
@@ -63,6 +66,25 @@ describe(`TransactionController (e2e) ${baseUrl}`, () => {
           amount: 1,
           type: TransactionType.CREDIT,
         } as TransactionCreateDto)
+        .expect(201);
+    });
+  });
+
+  describe(`POST /batch`, () => {
+    it('should create user transaction as batch', () => {
+      return request(app.getHttpServer())
+        .post(`${baseUrl}/batch`)
+        .send({
+          transactions: [
+            {
+              title: 't',
+              date: new Date(),
+              category: 'c',
+              amount: 1,
+              type: TransactionType.CREDIT,
+            },
+          ],
+        } as TransactionCreateBatchDto)
         .expect(201);
     });
   });
