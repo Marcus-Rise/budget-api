@@ -6,7 +6,6 @@ import { TransactionCreateBatchDto, TransactionCreateDto } from '../dto/transact
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
 
 const create = jest.fn();
-const createBatch = jest.fn();
 const findAll = jest.fn();
 const findOne = jest.fn();
 const update = jest.fn();
@@ -23,7 +22,6 @@ describe('TransactionController', () => {
           provide: TransactionService,
           useValue: {
             create,
-            createBatch,
             findAll,
             findOne,
             update,
@@ -38,7 +36,6 @@ describe('TransactionController', () => {
 
   afterEach(() => {
     create.mockReset();
-    createBatch.mockReset();
     findAll.mockReset();
     findOne.mockReset();
     update.mockReset();
@@ -56,18 +53,18 @@ describe('TransactionController', () => {
 
       await controller.create({ user: { id: userId } as IAuthJwtPayload }, dto);
 
-      expect(create).toHaveBeenNthCalledWith(1, userId, dto);
+      expect(create).toHaveBeenNthCalledWith(1, userId, [dto]);
     });
   });
 
   describe('createBatch', () => {
     it('should create transaction as batch', async () => {
       const userId = 1;
-      const dto = {} as TransactionCreateBatchDto;
+      const dto: TransactionCreateBatchDto = { transactions: [] };
 
       await controller.createBatch({ user: { id: userId } as IAuthJwtPayload }, dto);
 
-      expect(createBatch).toHaveBeenNthCalledWith(1, userId, dto);
+      expect(create).toHaveBeenNthCalledWith(1, userId, dto.transactions);
     });
   });
 

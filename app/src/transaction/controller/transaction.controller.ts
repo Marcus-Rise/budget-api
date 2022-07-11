@@ -13,13 +13,13 @@ class TransactionController {
   @Auth(AuthJwtRole.USER)
   @Post()
   create(@Request() req: { user: IAuthJwtPayload }, @Body() dto: TransactionCreateDto) {
-    return this._service.create(req.user.id, dto);
+    return this._service.create(req.user.id, [dto]);
   }
 
   @Auth(AuthJwtRole.USER)
   @Post('/batch')
   createBatch(@Request() req: { user: IAuthJwtPayload }, @Body() dto: TransactionCreateBatchDto) {
-    return this._service.createBatch(req.user.id, dto);
+    return this._service.create(req.user.id, dto.transactions);
   }
 
   @Auth(AuthJwtRole.USER)
