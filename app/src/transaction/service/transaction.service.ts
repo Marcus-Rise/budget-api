@@ -33,7 +33,7 @@ class TransactionService {
             where: { uuid: transaction.uuid },
           });
 
-          if (existingTransaction.user.id !== user.id) {
+          if (!!existingTransaction && existingTransaction.user.id !== user.id) {
             throw new ForbiddenException();
           }
         }
