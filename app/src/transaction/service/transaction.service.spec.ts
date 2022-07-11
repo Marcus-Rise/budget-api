@@ -5,7 +5,7 @@ import { Transaction } from '../entities/transaction.entity';
 import { UserService } from '../../user/service';
 import { User } from '../../user/entities/user.entity';
 import { TransactionCreateDto } from '../dto/transaction-create.dto';
-import { MethodNotAllowedException, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
 
 const findOneUser = jest.fn();
@@ -88,7 +88,7 @@ describe('TransactionService', () => {
 
       await expect(
         service.create(currentUserId, [{ uuid: 'aa' } as TransactionCreateDto]),
-      ).rejects.toThrow(MethodNotAllowedException);
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 

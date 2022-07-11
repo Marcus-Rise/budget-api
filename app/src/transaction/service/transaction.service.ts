@@ -1,4 +1,4 @@
-import { Injectable, MethodNotAllowedException, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { TransactionCreateDto } from '../dto/transaction-create.dto';
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
 import { Between, Equal, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
@@ -34,7 +34,7 @@ class TransactionService {
           });
 
           if (existingTransaction.user.id !== user.id) {
-            throw new MethodNotAllowedException();
+            throw new ForbiddenException();
           }
         }
 
