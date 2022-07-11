@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TransactionCreateDto } from '../dto/transaction-create.dto';
+import { TransactionCreateBatchDto, TransactionCreateDto } from '../dto/transaction-create.dto';
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
 import { Between, Equal, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { Transaction } from '../entities/transaction.entity';
@@ -23,11 +23,23 @@ class TransactionService {
       throw new NotFoundException();
     }
 
-    const transaction = TransactionEntityFactory.fromCreateDto(dto);
-
-    transaction.user = user;
+    const transaction = TransactionEntityFactory.fromCreateDto(dto, user);
 
     return this._repo.save(transaction);
+  }
+
+  async createBatch(userId: number, dto: TransactionCreateBatchDto) {
+    const user = await this._users.findOne(userId);
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    const transactions = dto.transactions.map((i) =>
+      TransactionEntityFactory.fromCreateDto(i, user),
+    );
+
+    return this._repo.save(transactions);
   }
 
   findAll(userId: number, query: TransactionListDto) {

@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request } from '@nestjs/common';
 import { TransactionService } from '../service';
-import { TransactionCreateDto } from '../dto/transaction-create.dto';
+import { TransactionCreateBatchDto, TransactionCreateDto } from '../dto/transaction-create.dto';
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
 import { Auth } from '../../auth/decorators/auth.decorator';
 import { AuthJwtRole, IAuthJwtPayload } from '../../auth/types';
@@ -14,6 +14,12 @@ class TransactionController {
   @Post()
   create(@Request() req: { user: IAuthJwtPayload }, @Body() dto: TransactionCreateDto) {
     return this._service.create(req.user.id, dto);
+  }
+
+  @Auth(AuthJwtRole.USER)
+  @Post('/batch')
+  createBatch(@Request() req: { user: IAuthJwtPayload }, @Body() dto: TransactionCreateBatchDto) {
+    return this._service.createBatch(req.user.id, dto);
   }
 
   @Auth(AuthJwtRole.USER)

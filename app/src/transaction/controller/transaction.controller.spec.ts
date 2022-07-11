@@ -2,10 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionController } from './transaction.controller';
 import { TransactionService } from '../service';
 import { IAuthJwtPayload } from '../../auth/types';
-import { TransactionCreateDto } from '../dto/transaction-create.dto';
+import { TransactionCreateBatchDto, TransactionCreateDto } from '../dto/transaction-create.dto';
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
 
 const create = jest.fn();
+const createBatch = jest.fn();
 const findAll = jest.fn();
 const findOne = jest.fn();
 const update = jest.fn();
@@ -22,6 +23,7 @@ describe('TransactionController', () => {
           provide: TransactionService,
           useValue: {
             create,
+            createBatch,
             findAll,
             findOne,
             update,
@@ -36,6 +38,7 @@ describe('TransactionController', () => {
 
   afterEach(() => {
     create.mockReset();
+    createBatch.mockReset();
     findAll.mockReset();
     findOne.mockReset();
     update.mockReset();
@@ -54,6 +57,17 @@ describe('TransactionController', () => {
       await controller.create({ user: { id: userId } as IAuthJwtPayload }, dto);
 
       expect(create).toHaveBeenNthCalledWith(1, userId, dto);
+    });
+  });
+
+  describe('createBatch', () => {
+    it('should create transaction as batch', async () => {
+      const userId = 1;
+      const dto = {} as TransactionCreateBatchDto;
+
+      await controller.createBatch({ user: { id: userId } as IAuthJwtPayload }, dto);
+
+      expect(createBatch).toHaveBeenNthCalledWith(1, userId, dto);
     });
   });
 

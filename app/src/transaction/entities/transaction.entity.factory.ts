@@ -1,9 +1,10 @@
 import { Transaction } from './transaction.entity';
 import { TransactionCreateDto } from '../dto/transaction-create.dto';
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
+import { User } from '../../user/entities/user.entity';
 
 class TransactionEntityFactory {
-  static fromCreateDto(dto: TransactionCreateDto): Transaction {
+  static fromCreateDto(dto: TransactionCreateDto, user: User): Transaction {
     const transaction = new Transaction();
 
     transaction.title = dto.title;
@@ -11,6 +12,7 @@ class TransactionEntityFactory {
     transaction.amount = dto.amount;
     transaction.category = dto.category;
     transaction.date = dto.date;
+    transaction.user = user;
 
     return transaction;
   }
