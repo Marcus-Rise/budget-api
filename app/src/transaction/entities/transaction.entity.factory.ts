@@ -7,6 +7,10 @@ class TransactionEntityFactory {
   static fromCreateDto(dto: TransactionCreateDto, user: User): Transaction {
     const transaction = new Transaction();
 
+    if (dto.uuid) {
+      transaction.uuid = dto.uuid;
+    }
+
     transaction.title = dto.title;
     transaction.type = dto.type;
     transaction.amount = dto.amount;

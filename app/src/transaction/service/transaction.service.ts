@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { TransactionCreateBatchDto, TransactionCreateDto } from '../dto/transaction-create.dto';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { TransactionCreateDto } from '../dto/transaction-create.dto';
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
 import { Between, Equal, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { Transaction } from '../entities/transaction.entity';
@@ -16,27 +16,30 @@ class TransactionService {
     private readonly _users: UserService,
   ) {}
 
-  async create(userId: number, dto: TransactionCreateDto) {
+  async create(userId: number, dto: TransactionCreateDto[]) {
     const user = await this._users.findOne(userId);
 
     if (!user) {
       throw new NotFoundException();
     }
 
-    const transaction = TransactionEntityFactory.fromCreateDto(dto, user);
+    const transactions = await Promise.all(
+      dto.map(async (i) => {
+        const transaction = TransactionEntityFactory.fromCreateDto(i, user);
 
-    return this._repo.save(transaction);
-  }
+        if (!!transaction.uuid) {
+          const existingTransaction = await this._repo.findOne({
+            relations: ['user'],
+            where: { uuid: transaction.uuid },
+          });
 
-  async createBatch(userId: number, dto: TransactionCreateBatchDto) {
-    const user = await this._users.findOne(userId);
+          if (existingTransaction.user.id !== user.id) {
+            throw new ForbiddenException();
+          }
+        }
 
-    if (!user) {
-      throw new NotFoundException();
-    }
-
-    const transactions = dto.transactions.map((i) =>
-      TransactionEntityFactory.fromCreateDto(i, user),
+        return transaction;
+      }),
     );
 
     return this._repo.save(transactions);

@@ -4,8 +4,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Transaction } from '../entities/transaction.entity';
 import { UserService } from '../../user/service';
 import { User } from '../../user/entities/user.entity';
-import { TransactionCreateBatchDto, TransactionCreateDto } from '../dto/transaction-create.dto';
-import { NotFoundException } from '@nestjs/common';
+import { TransactionCreateDto } from '../dto/transaction-create.dto';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { TransactionUpdateDto } from '../dto/transaction-update.dto';
 
 const findOneUser = jest.fn();
@@ -56,36 +56,39 @@ describe('TransactionService', () => {
       findOneUser.mockReturnValueOnce({} as User);
       saveTransaction.mockReturnValueOnce(result);
 
-      await expect(service.create(1, {} as TransactionCreateDto)).resolves.toEqual(result);
+      await expect(service.create(1, [{} as TransactionCreateDto])).resolves.toEqual(result);
+    });
+
+    it('should replace user transaction if exists', async () => {
+      const currentUserId = 1;
+      const result = '';
+
+      findOneUser.mockReturnValueOnce({ id: currentUserId } as User);
+      findOneTransaction.mockReturnValue({ user: { id: currentUserId } } as Transaction);
+      saveTransaction.mockReturnValueOnce(result);
+
+      await expect(service.create(1, [{ uuid: 'aa' } as TransactionCreateDto])).resolves.toEqual(
+        result,
+      );
     });
 
     it('should throw error if user not exists', async () => {
       findOneUser.mockReturnValueOnce(undefined);
 
-      await expect(service.create(1, {} as TransactionCreateDto)).rejects.toThrow(
+      await expect(service.create(1, [{} as TransactionCreateDto])).rejects.toThrow(
         NotFoundException,
       );
     });
-  });
 
-  describe('createBatch', () => {
-    it('should create user transaction', async () => {
-      const result = '';
+    it('should throw error if transaction user is not current user', async () => {
+      const currentUserId = 1;
 
-      findOneUser.mockReturnValueOnce({} as User);
-      saveTransaction.mockReturnValueOnce(result);
+      findOneUser.mockReturnValueOnce({ id: currentUserId } as User);
+      findOneTransaction.mockReturnValue({ user: { id: 2 } } as Transaction);
 
       await expect(
-        service.createBatch(1, { transactions: [] } as TransactionCreateBatchDto),
-      ).resolves.toEqual(result);
-    });
-
-    it('should throw error if user not exists', async () => {
-      findOneUser.mockReturnValueOnce(undefined);
-
-      await expect(
-        service.createBatch(1, { transactions: [] } as TransactionCreateBatchDto),
-      ).rejects.toThrow(NotFoundException);
+        service.create(currentUserId, [{ uuid: 'aa' } as TransactionCreateDto]),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 
